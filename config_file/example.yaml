@@ -1,5 +1,5 @@
 data:
   subject_name: mnist
-  subject_path: test_models/mnist_conv.py
-  muttaions: ["change_optimisation_function"]
+  original_path: test_models/mnist/Deepcrime/mnist_conv.py
+  mutations: ["change_optimisation_function"]
   mode: test

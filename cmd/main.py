@@ -1,6 +1,6 @@
 import argparse
 
-from config import init
+from utils import config
 from execution import execute
 from mutation import mutate
 
@@ -15,13 +15,13 @@ def run():
     args = parser.parse_args()
 
     # Set up the experiment parameters
-    config = init.init_conf(args.config)
+    conf = config.init_conf(args.config)
 
     # Generate mutation models TODO
-    mutate.mutate_model(config)
+    mutate.mutate_model(conf)
 
     # Train the models and save results TODO
-    execute.execute_models(config)
+    execute.execute_models(conf)
 
 
 if __name__ == '__main__':

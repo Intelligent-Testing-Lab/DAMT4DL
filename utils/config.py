@@ -1,4 +1,4 @@
-import yaml
+import yaml # type: ignore
 
 def read_yaml_config(file_path):
     """
