@@ -15,7 +15,7 @@ def run():
     args = parser.parse_args()
 
     # Set up the experiment parameters
-    conf = config.init_conf(args.config)
+    conf = config.Config.from_yaml(args.config)
 
     # Generate mutation models TODO
     mutate.mutate_model(conf)

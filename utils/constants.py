@@ -7,6 +7,13 @@ save_paths = {
     "prepared": "results/prepared_models" # the path to save the prepared original program
 }
 
+###
+# the name of python file 
+###
+file_name = {
+    "prepared": "prepared.py",
+    "mutated": "muated%d.py",
+}
 
 ###
 # Operators lib

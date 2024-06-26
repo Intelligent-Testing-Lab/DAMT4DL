@@ -1,19 +1,20 @@
 import yaml # type: ignore
 
-def read_yaml_config(file_path):
-    """
-    Reads the configuration file in YAML format
-    """
-    with open(file_path, 'r') as stream:
-        try:
-            return yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-def init_conf(file_path):
-    config = read_yaml_config(file_path)
-    return config
+class Config:
+    def __init__(self, subject_name, original_path, mutations, mode, criterion):
+        self.subject_name = subject_name
+        self.original_path = original_path
+        self.mutations = mutations
+        self.mode = mode
+        self.criterion = criterion
+   
+    @staticmethod
+    def from_yaml(file_path):
+        with open(file_path, 'r') as file:
+           data = yaml.safe_load(file)
+           return Config(**data)
 
 if __name__ == '__main__':
-    config = init_conf('../config_file/example.yaml')
-    print(config['data'])
+    conf = Config.from_yaml('../config_file/example.yaml')
+    print(conf.mutations)
+    

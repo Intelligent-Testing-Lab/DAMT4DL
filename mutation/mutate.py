@@ -4,19 +4,16 @@ from utils import constants, gen_path_name
 from mutation import prepare
 
 def mutate_model(config):
-    # Get the configuration parameters
-    mutations = config['data']['mutations']
-    subject_name = config['data']['subject_name']
-    original_path = config['data']['original_path']
+    # Set up the paths
     mutants_path = constants.save_paths['mutated']
     prepared_path = constants.save_paths['prepared']
 
-
     # prepare the original model code and save it 
-    save_path_prepared = gen_path_name.gen_prepare_path_name(prepared_path, subject_name)
-    prepare.prepare_model(original_path, save_path_prepared)
+    full_prepared_path = gen_path_name.gen_prepare_directory_path(prepared_path, config)
+    save_path_prepared = os.path.join(full_prepared_path, 'prepared.py')
+    prepare.prepare_model(config.original_path, save_path_prepared)
     
     # Generate the mutated models
-    for mutation in mutations:
-        save_path_mutated = gen_path_name.gen_mutant_path_name(mutants_path, subject_name, mutation)
+    for mutation in config.mutations:
+        full_mutants_path = gen_path_name.gen_mutant_directory_path(mutants_path, config, mutation)
      
