@@ -1,9 +1,6 @@
 import ast
-import shutil
 
-from io import StringIO
-from utils import constants
-from utils.unparse import Unparser
+from mutation.mutation_utils import *
 
 def prepare_model(original_path, save_path):
     """
@@ -33,74 +30,6 @@ def prepare_model(original_path, save_path):
 
     # unparse the tree and save the prepared model code
     unparse_tree(tree, save_path)
-
-
-def unparse_tree(tree, save_path):
-    """Unparse the ast tree, save code to py file.
-
-        Keyword arguments:
-        tree -- ast tree
-        save_path -- the py file where to save the code
-
-        Returns: int (0 - success, -1 otherwise)
-    """
-
-    buf = StringIO()
-    try:
-        Unparser(tree, buf)
-        buf.seek(0)
-
-        with open(save_path, 'w') as fd:
-            buf.seek(0)
-            shutil.copyfileobj(buf, fd)
-            fd.close()
-    except Exception as e:
-        print("Unable to unparse the tree: " + str(e))
-        raise
-
-
-
-def is_import(elem):
-    """Check if the given element is an import of library
-
-        Keyword arguments:
-        elem -- part of ast node
-
-        Returns: boolean
-    """
-
-    is_imp = False
-
-    if isinstance(elem, ast.Import):
-        is_imp = True
-
-
-def generate_import_nodes():
-    """
-    Generate import nodes for the prepared model
-    """
-   
-    import_nodes = []
-
-    # add the import nodes for the operators
-    # for imp in constants.operator_lib:
-    #     import_nodes.append(
-    #         ast.ImportFrom(module=constants.operator_mod, names=[
-    #             ast.alias(name=imp, asname=None),
-    #         ], level=0)) 
-
-    # TODO based on the tasks to update the import nodes
-    # import_nodes.append(
-    #     ast.ImportFrom(module="utils", names=[
-    #         ast.alias(name="properties", asname=None),
-    #     ], level=0))
-
-    # import_nodes.append(
-    #     ast.ImportFrom(module="keras", names=[
-    #         ast.alias(name="optimizers", asname=None),
-    #     ], level=0))
-
-    return import_nodes
 
 
 
