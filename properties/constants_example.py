@@ -1,3 +1,11 @@
+# This file is adapted from the following source:
+# Title: Replication package for the "DeepCrime: Mutation Testing of Deep Learning Systems based on Real Faults" paper
+# Authors: Nargiz Humbatova, Gunel Jahangirova, & Paolo Tonella
+# Conference: ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA), Aarhus, Denmark
+# Link: https://zenodo.org/records/4772465
+# DOI: https://doi.org/10.5281/zenodo.4772465
+# License: Creative Commons Attribution 4.0 International
+
 ###
 # Mapping between configuration file that enables mutations and mutation classes
 ###
