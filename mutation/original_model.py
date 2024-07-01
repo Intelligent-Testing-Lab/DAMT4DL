@@ -18,6 +18,7 @@ def update_orginal_model(model_path, save_path):
 # DOI: https://doi.org/10.5281/zenodo.4772465
 # License: Creative Commons Attribution 4.0 International
 def modify_original_model(model_path, save_path):
+
     with open(model_path, "r") as source:
         tree = ast.parse(source.read())
 
@@ -31,10 +32,9 @@ def modify_original_model(model_path, save_path):
                     if is_import(x):
                         import_nodes = []
                         import_nodes.append(
-                            ast.ImportFrom(module="utils", names=[
+                            ast.ImportFrom(module="mutation", names=[
                                 ast.alias(name="mutation_utils", asname=None),
                             ], level=0))
-
                         for i, n in enumerate(import_nodes):
                             node.body.insert(ind + i + 1, n)
 
@@ -79,5 +79,5 @@ def modify_original_model(model_path, save_path):
     ast.fix_missing_locations(tree)
 
     # unparse the ast tree, write the resulting code into py file
-    save_path_prepared = os.path.join(save_path, "origianl.py")
+    save_path_prepared = os.path.join(save_path, "original.py")
     unparse_tree(tree, save_path_prepared)

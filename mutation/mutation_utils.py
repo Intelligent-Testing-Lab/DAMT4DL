@@ -7,11 +7,16 @@
 # License: Creative Commons Attribution 4.0 International
 
 import ast
+import keras
 import shutil
+import tensorflow as tf
+import utils.constants as const
+import utils.properties as props
 
 from io import StringIO
-from utils import constants
+
 from utils.unparse import Unparser
+
 
 def unparse_tree(tree, save_path):
     """Unparse the ast tree, save code to py file.
@@ -47,35 +52,62 @@ def is_import(elem):
     """
 
     is_imp = False
-
     if isinstance(elem, ast.Import):
         is_imp = True
+    return is_imp
 
 
 def generate_import_nodes():
+    """Generate an import node based on the mutation_type
+
+        Keyword arguments:
+        types -- list of types of mutations to be done on a model in question
+
+        Returns: list of ast import nodes
     """
-    Generate import nodes for the prepared model
-    """
-   
+
+    # TODO: get the dict of (mutation type, mutation lib name)
+
     import_nodes = []
 
-    # add the import nodes for the operators
-    # for imp in constants.operator_lib:
+    # for type in mutation_types:
+    #     # import_nodes.append(ast.Import(names=[ast.alias(name=const.mutation_imports[type], asname=None)]))
     #     import_nodes.append(
-    #         ast.ImportFrom(module=constants.operator_mod, names=[
-    #             ast.alias(name=imp, asname=None),
-    #         ], level=0)) 
+    #         ast.ImportFrom(module=const.operator_lib, names=[
+    #             ast.alias(name=const.mutation_imports[type], asname=None),
+    #         ], level=0))
 
-    # TODO based on the tasks to update the import nodes
+    for imp in const.operator_lib:
+        # import_nodes.append(ast.Import(names=[ast.alias(name=const.mutation_imports[type], asname=None)]))
+        import_nodes.append(
+            ast.ImportFrom(module=const.operator_mod, names=[
+                ast.alias(name=imp, asname=None),
+            ], level=0))
+
     # import_nodes.append(
-    #     ast.ImportFrom(module="utils", names=[
-    #         ast.alias(name="properties", asname=None),
+    #     ast.ImportFrom(module="operators", names=[
+    #         ast.alias(name="training_process_operators", asname=None),
+    #     ], level=0))
+    #
+    # import_nodes.append(
+    #     ast.ImportFrom(module="operators", names=[
+    #         ast.alias(name="activation_function_operators", asname=None),
     #     ], level=0))
 
-    # import_nodes.append(
-    #     ast.ImportFrom(module="keras", names=[
-    #         ast.alias(name="optimizers", asname=None),
-    #     ], level=0))
+    import_nodes.append(
+        ast.ImportFrom(module="utils", names=[
+            ast.alias(name="mutation_utils", asname=None),
+        ], level=0))
+
+    import_nodes.append(
+        ast.ImportFrom(module="utils", names=[
+            ast.alias(name="properties", asname=None),
+        ], level=0))
+
+    import_nodes.append(
+        ast.ImportFrom(module="keras", names=[
+            ast.alias(name="optimizers", asname=None),
+        ], level=0))
 
     return import_nodes
 
@@ -137,3 +169,40 @@ def is_specific_call(elem, call_type):
         is_scall = True
 
     return is_scall
+
+
+def save_original_model_params(model):
+    dropout_layers = {}
+
+    for attr, value in model.__dict__.items():
+        if attr == "optimizer":
+            lr = model.__dict__.get('optimizer').__dict__.get('learning_rate')
+            lr_value = tf.keras.backend.get_value(lr)
+            props.model_properties["learning_rate"] = lr_value
+
+    if model.layers:
+        props.model_properties["layers_num"] = len(model.layers)
+
+        for ind, layer in enumerate(model.layers):
+            if isinstance(layer, keras.layers.core.Dropout):
+                dropout_layers[ind] = [layer.name, layer.rate]
+
+        props.model_properties["dropout_layers"] = dropout_layers
+
+    else:
+        print("model has no layers")
+
+def save_original_fit_params(x = None, epochs = None, batch_size = None):
+    # if x.any():
+    if x is not None:
+        try:
+            props.model_properties["x_train_len"] = len(x)
+        except:
+            props.disable_batching["applicable"] = False
+            props.change_batch_size["applicable"] = False
+    else:
+        props.disable_batching["applicable"] = False
+        props.change_batch_size["applicable"] = False
+
+    props.model_properties["epochs"] = epochs
+    props.model_properties["batch_size"] = batch_size
