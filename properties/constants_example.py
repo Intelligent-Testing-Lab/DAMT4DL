@@ -53,7 +53,8 @@ mutation_class_map = {
 save_paths = {
     "trained": "results/trained_models", # the path to save the trained models
     "mutated": "results/mutated_models", # the path to save the mutated programs
-    "prepared": "results/prepared_models" # the path to save the prepared original program
+    "prepared": "results/prepared_models", # the path to save the prepared program for muatation
+    "original": "results/original_models" # the path to save the original program
 }
 
 ###

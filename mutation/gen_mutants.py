@@ -5,16 +5,23 @@ import mutation.mutations as mutations
 from utils import constants, gen_path_name
 from mutation.mutations import *
 from mutation.prepare import *
+from mutation.original_model import *
 
 def mutate_model(config):
     # Set up the paths
     mutants_path = constants.save_paths['mutated']
     prepared_path = constants.save_paths['prepared']
+    origianl_path = constants.save_paths['original']
 
-    # prepare the original model code and save it 
+
+    # prepare the original model code for muation and save it 
     full_prepared_path = gen_path_name.gen_prepare_directory_path(prepared_path, config)
     save_path_prepared = os.path.join(full_prepared_path, 'prepared.py')
     prepare_model(config.original_path, save_path_prepared)
+
+    # prepare the origianl model for training
+    full_original_path = gen_path_name.gen_original_directory_path(origianl_path, config)
+    update_orginal_model(config.original_path, full_original_path)
     
     # Generate the mutated models
     for mutation in config.mutations:
