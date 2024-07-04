@@ -206,3 +206,28 @@ def save_original_fit_params(x = None, epochs = None, batch_size = None):
 
     props.model_properties["epochs"] = epochs
     props.model_properties["batch_size"] = batch_size
+
+def is_training_call(elem):
+    """Check if the given node corresponds to the call to fit/fit_generator
+
+        Keyword arguments:
+        elem - ast node
+
+        Returns: boolean
+    """
+
+    is_call = False
+
+    if (isinstance(elem, ast.Assign)
+        and isinstance(elem.value, ast.Call) \
+        and isinstance(elem.value.func, ast.Attribute) \
+        # and elem.value.func.attr == 'fit') \
+        and elem.value.func.attr in ('fit', 'fit_generator')) \
+            or (isinstance(elem, ast.Expr)
+                and isinstance(elem.value, ast.Call)
+                and hasattr(elem.value.func, 'attr')
+                # and elem.value.func.attr == 'fit'):
+                and elem.value.func.attr in ('fit', 'fit_generator')):
+        is_call = True
+
+    return is_call

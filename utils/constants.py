@@ -111,6 +111,12 @@ runs_number_default = 10
 binary_search_precision = 5
 
 ###
+# Search type
+###
+Binary = 'binary'
+Exhaustive = 'exhaustive'
+
+###
 # Mutation params abbreviations
 ###
 mutation_params_abbrvs = [

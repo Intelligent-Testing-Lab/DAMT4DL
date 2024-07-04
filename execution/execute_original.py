@@ -10,7 +10,6 @@ def execute_original_model(path):
     # results save path
     scores_file_path = os.path.join(path, 'scores.csv') # save the scores of the original model
 
-    
     # load the original model 
     transformed_path = os.path.join(path, 'original.py').replace(os.path.sep, ".").replace(".py", "")
     m1 = importlib.import_module(transformed_path)
@@ -32,3 +31,4 @@ def execute_original_model(path):
         scores = load_scores_from_csv(scores_file_path)
 
     print("Execution of original model completed")
+    return scores
