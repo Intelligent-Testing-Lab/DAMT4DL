@@ -4,14 +4,15 @@ import os
 import utils.properties as props
 import utils.constants as const
 
-from execution.execution_utils import *
 from analyse.stats import *
+from execution.execution_utils import *
 
-def execute_mutants_MO(mutation_path, mutation, full_original_path):
+
+def execute_mutants_MO(full_path, mutation, mutant_weights_path):
     """
     execute the mutants for each mutation operator
     """
-    print("Executing mutants")
+    print("Executing mutants of mutation opertaor: %s, from path: %s" % (mutation, full_path))
     
     # read the muation operator parameters
     mutation_params = {}
@@ -20,10 +21,9 @@ def execute_mutants_MO(mutation_path, mutation, full_original_path):
     except AttributeError:
         print("No attributes found")
 
+    # TODO handle the udp
     # # read the model parameters
     # model_params = getattr(props, "model_properties") # TODO what is model_properties?
-
-    # TODO what is udp?
     # udp = [value for key, value in mutation_params.items() if "udp" in key.lower() and "layer" not in key.lower()]
     # if len(udp) > 0:
     #     udp = udp[0]
@@ -33,21 +33,21 @@ def execute_mutants_MO(mutation_path, mutation, full_original_path):
 
     # read the search type
     search_type = mutation_params.get("search_type")
+    print("Search Type: " + str(search_type))
 
     # execute the mutants
-    for dirpath, _, filenames in os.walk(mutation_path):
+    for dirpath, _, filenames in os.walk(full_path):
         for filename in filenames:
-            if filename.endswith('.py'):
-                # read the path of the mutant
-                mutant_path = os.path.join(dirpath, filename)
-
+            # filter the mutated files
+            if filename.endswith('.py') and ('mutated' in filename):
                 # based on the search type, execute the mutant
                 if search_type == const.Binary:
                     print("calling binary search")
-                    execute_binary_search(mutant_path, mutation, mutation_params, mutation_path, full_original_path)
+
+                    execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path)
                 elif search_type == const.Exhaustive:
                     print("calling exhaustive search")
-                    execute_exhaustive_search(mutant_path, mutation, mutation_params, mutation_path, full_original_path)
+                    execute_exhaustive_search(full_path, filename, mutation, mutation_params, mutant_weights_path)
                 else:
                     # TODO handle when search type is None
                     pass
@@ -75,43 +75,43 @@ def execute_mutants_MO(mutation_path, mutation, full_original_path):
 
 
 
-def execute_binary_search(mutant_path, mutation, mutation_params, mutation_path, full_original_path):
+def execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path):
     """
     execute the binary search for a mutant
 
     Args:
-    mutant_path -- the path of the mutant
-    mutation -- the mutation operator name
+    full_path -- the full path
+    filename -- the filename of the mutant
+    mutation -- the mutation operator
     mutation_params -- the parameters of the mutation operator
-    full_original_path -- the path of the original model
     """
-    print("Running Binary Search for" + str(mutation))
+    print("Running Binary Search for " + str(mutation))
 
     # read the mutation parameters
     lower_bound = mutation_params["bs_lower_bound"]
     upper_bound = mutation_params["bs_upper_bound"]
 
     # get the performance of the orginal model
-    origianl_scores_file_path = os.path.join(full_original_path, 'scores.csv') # save the scores of the original model
+    origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
     original_scores = load_scores_from_csv(origianl_scores_file_path)
     original_accuracy = get_accuracy_list_from_scores(original_scores)
 
     # execute the upper bound of the mutant
     update_mutation_properties(mutation, "pct", upper_bound) # update the parameyters using upper bound
-    mutant_scores = execute_mutant(mutant_path, mutation_path, mutation_params)
+    mutant_scores = execute_mutant(full_path, filename, mutation_params, mutant_weights_path)
     mutant_accuracy = get_accuracy_list_from_scores(mutant_scores)
 
     # satistic anaylyse for the performance 
     is_sts, p_value, effect_size = is_diff_sts(original_accuracy, mutant_accuracy)
 
     # save the results of the upper bound of the mutant
-    states_path = os.path.join(mutation_path, 'states')
+    states_path = os.path.join(full_path, 'stats.csv')
     save_sates_csv(str(lower_bound),str(upper_bound), '', p_value, effect_size, is_sts, states_path)
 
     # execute the lower bound of the mutant
     if is_sts:
         print("Binary Search: Upper Bound is Killable")
-        search_for_bs_conf(mutant_path, mutation, mutation_params, lower_bound, upper_bound, original_accuracy, mutant_accuracy, states_path, mutation_path)
+        search_for_bs_conf(full_path, filename, mutation, mutation_params, mutant_weights_path, lower_bound, upper_bound, original_accuracy, mutant_accuracy, states_path)
     else:
         print("Binary Search: Upper Bound is Not Killable")
 
@@ -122,16 +122,17 @@ def execute_binary_search(mutant_path, mutation, mutation_params, mutation_path,
 # Link: https://zenodo.org/records/4772465
 # DOI: https://doi.org/10.5281/zenodo.4772465
 # License: Creative Commons Attribution 4.0 International
-def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_original_path, mutation_ind = ''):
+def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_weights_path, mutation_ind = ''):
+    # TODO undertand the muation_ind
 
-    print("Running Exhaustive Search for" + str(mutant))
+    print("Running Exhaustive Search for " + str(mutation))
     # get the performance of the orginal model
-    origianl_scores_file_path = os.path.join(full_original_path, 'scores.csv') # save the scores of the original model
+    origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
     original_scores = load_scores_from_csv(origianl_scores_file_path)
     original_accuracy_list = get_accuracy_list_from_scores(original_scores)
 
     # get the path of the states
-    states_path = os.path.join(mutation_path, 'states')
+    states_path = os.path.join(full_path, 'stats.cvs')
 
 
     name = my_params['name']
@@ -139,7 +140,7 @@ def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_o
         for optimiser in const.keras_optimisers:
             print("Changing into optimiser:" + str(optimiser))
             update_mutation_properties(mutation, "optimisation_function_udp", optimiser)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(mutant, my_params))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -150,7 +151,7 @@ def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_o
         for activation in const.activation_functions:
             print("Changing into activation:" + str(activation))
             update_mutation_properties(mutation, "activation_function_udp", activation)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(mutant, my_params, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path, mutation_ind))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -161,7 +162,7 @@ def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_o
         for loss in const.keras_losses:
             print("Changing into loss:" + str(loss))
             update_mutation_properties(mutation, "loss_function_udp", loss)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(mutant, my_params))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -172,7 +173,7 @@ def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_o
         for dropout in const.dropout_values:
             print("Changing into dropout rate:" + str(dropout))
             update_mutation_properties(mutation, "rate", dropout)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(mutant, my_params, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path, mutation_ind))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -183,7 +184,7 @@ def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_o
         for batch_size in const.batch_sizes:
             print("Changing into batch size:" + str(batch_size))
             update_mutation_properties(mutation, "batch_size", batch_size)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(mutant, my_params))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -194,7 +195,7 @@ def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_o
         for initialiser in const.keras_initialisers:
             print("Changing into initialisation:" + str(initialiser))
             update_mutation_properties(mutation, "weights_initialisation_udp", initialiser)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(mutant, my_params, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path, mutation_ind))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -205,7 +206,7 @@ def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_o
         for regularisation in const.keras_regularisers:
             print("Changing into regularisation:" + str(regularisation))
             update_mutation_properties(mutation, "weights_regularisation_udp", regularisation)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(mutant, my_params, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path, mutation_ind))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -213,22 +214,27 @@ def execute_exhaustive_search(mutant, mutation, my_params, mutation_path, full_o
                     writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
                     writer.writerow([str(regularisation), str(p_value), str(effect_size), str(is_sts)])
     
-def execute_mutant(mutant_path, mutation_path, mutation_params):
+def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weights_path, mutation_ind = ''):
     """
     execute for a mutant based on the given parameters
     Args:
-    mutant_path -- the path of the mutant
-    mutation_path -- the path of the mutation operator
+    mutation_path -- the directory path of the mutation operator
+    mutant_filename -- the filename of the mutant
     mutation_params -- the parameters of the mutation operator
+    mutant_weights_path -- the path to save the weights of the mutant
+    mutation_ind -- the mutation index 
     """
-    # results save path
-    scores_file_path = os.path.join(mutation_path, 'scores.csv') # save the scores of the original model
-
+    # TODO mutaion_ind understand
+    
     scores = [] # save the scores of the mutant
     params_list = concat_params_for_file_name(mutation_params) # concat the parameters for the file name
+    # results save path
+    scores_file_path = os.path.join(mutation_path, 'mutant_score_%s_%s%s.csv' % (mutant_filename,  params_list, mutation_ind))
+
 
     # load the mutant
-    m1 = importlib.import_module(mutant_path)
+    transformed_path = os.path.join(mutation_path, mutant_filename).replace(os.path.sep, ".").replace(".py", "")
+    m1 = importlib.import_module(transformed_path)
 
     # TODO: need to check
     # data = read_properties()
@@ -237,8 +243,9 @@ def execute_mutant(mutant_path, mutation_path, mutation_params):
 
     # train the mutant and save the results
     if not(os.path.isfile(scores_file_path)):
+        print("training mutant model from scratch")
         for i in range(mutation_params["runs_number"]):
-            weight_file_path = os.path.join(mutation_path, 'weights', 'model_weights_%s_%d.h5' % (params_list, i))
+            weight_file_path = os.path.join(mutant_weights_path, 'model_weights%s_%d.h5' % (params_list, i))
             score = m1.main(weight_file_path)
             scores.append(score)
         # save the scores
@@ -274,9 +281,6 @@ def concat_params_for_file_name(params):
         list_params = "_" + list_params[:-1]
 
     return list_params
-    
-    
-    
 
 # This function is adapted from the following source:
 # Title: Replication package for the "DeepCrime: Mutation Testing of Deep Learning Systems based on Real Faults" paper
@@ -285,7 +289,7 @@ def concat_params_for_file_name(params):
 # Link: https://zenodo.org/records/4772465
 # DOI: https://doi.org/10.5281/zenodo.4772465
 # License: Creative Commons Attribution 4.0 International
-def search_for_bs_conf(mutant_path, mutation, my_params, lower_bound, upper_bound, lower_accuracy_list, upper_accuracy_list, states_path, mutation_path):
+def search_for_bs_conf(full_path, filename, mutation, my_params, mutant_weights_path, lower_bound, upper_bound, lower_accuracy_list, upper_accuracy_list, states_path):
     """
     search for the binary search confidence: until the size of the range becomes smaller than or equal to a predefined precision 𝜖,
     """
@@ -306,7 +310,7 @@ def search_for_bs_conf(mutant_path, mutation, my_params, lower_bound, upper_boun
 
     # execute the middle bound
     update_mutation_properties(mutation, "pct", middle_bound)
-    middle_scores = execute_mutant(mutant_path, mutation_path, my_params)
+    middle_scores = execute_mutant(full_path, filename, my_params, mutant_weights_path)
     middle_accuracy_list = get_accuracy_list_from_scores(middle_scores)
 
     # statistic analysis for the performance
@@ -343,5 +347,5 @@ def search_for_bs_conf(mutant_path, mutation, my_params, lower_bound, upper_boun
         return perfect, conf_nk
     else:
         print("Changing interval to: [" + str(lower_bound) + ", " + str(upper_bound) + "]")
-        return search_for_bs_conf(mutant_path, mutation, my_params, lower_bound, upper_bound,
-                                  lower_accuracy_list, upper_accuracy_list, states_path, mutation_path)
+        return search_for_bs_conf(full_path, mutation, my_params, mutant_weights_path, lower_bound, upper_bound,
+                                  lower_accuracy_list, upper_accuracy_list, states_path, full_path)

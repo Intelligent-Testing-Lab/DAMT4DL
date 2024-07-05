@@ -79,5 +79,4 @@ def modify_original_model(model_path, save_path):
     ast.fix_missing_locations(tree)
 
     # unparse the ast tree, write the resulting code into py file
-    save_path_prepared = os.path.join(save_path, "original.py")
-    unparse_tree(tree, save_path_prepared)
+    unparse_tree(tree, save_path)

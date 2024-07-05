@@ -95,7 +95,7 @@ def generate_import_nodes():
     #     ], level=0))
 
     import_nodes.append(
-        ast.ImportFrom(module="utils", names=[
+        ast.ImportFrom(module="mutation", names=[
             ast.alias(name="mutation_utils", asname=None),
         ], level=0))
 

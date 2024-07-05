@@ -7,34 +7,27 @@ from mutation.mutations import *
 from mutation.prepare import *
 from mutation.original_model import *
 
-def mutate_model(config):
-    # Set up the paths
-    mutants_path = constants.save_paths['mutated']
-    prepared_path = constants.save_paths['prepared']
-    origianl_path = constants.save_paths['original']
-
-
-    # prepare the original model code for muation and save it 
-    full_prepared_path = gen_path_name.gen_prepare_directory_path(prepared_path, config)
-    save_path_prepared = os.path.join(full_prepared_path, 'prepared.py')
-    prepare_model(config.original_path, save_path_prepared)
-
-    # prepare the origianl model for training
-    full_original_path = gen_path_name.gen_original_directory_path(origianl_path, config)
-    update_orginal_model(config.original_path, full_original_path)
-    
+def mutate_model(config):    
     # Generate the mutated models
     for mutation in config.mutations:
-        full_mutants_path = os.path.join(gen_path_name.gen_mutant_directory_path(mutants_path, config, mutation), 'mutated')
-        try:
-            mutationClass = create_mutation(mutation)
-            mutationClass.mutate(save_path_prepared, full_mutants_path)
-        except LookupError as e:
-            logging.info("Unable to apply the mutation for mutation %s. See technical logs for details. ", mutation)
-            logging.error("Was not able to create a class for mutation %s: " + str(e), mutation)
-        except Exception as e:
-            logging.info("Unable to apply the mutation for mutation %s. See technical logs for details. ", mutation)
-            logging.error("Unable to apply the mutation for mutation %s: " + str(e), mutation)
+        
+        # prepare the original model code for muation and save it 
+        full_path = gen_path_name.gen_full_path('results', config, mutation)
+        save_path_prepared = os.path.join(full_path, 'prepared.py')
+        prepare_model(config.original_path, save_path_prepared)
+        print("Prepared model saved to: %s\n" % save_path_prepared)
+
+        # prepare the origianl model for training
+        sava_path_original = os.path.join(full_path, 'original.py')
+        update_orginal_model(config.original_path, sava_path_original)
+        print("Original model saved to: %s\n" % sava_path_original)
+
+        print("Generate mutants for mutation %s\n\n" % mutation)
+        # create the muatant 
+        mutationClass = create_mutation(mutation)
+        mutationClass.mutate(save_path_prepared, full_path)
+        
+        print("Mutation (%s) applied to the model. Mutated models saved to: %s\n" % (mutation, full_path))
        
 
 
@@ -49,11 +42,5 @@ def create_mutation(mut):
     """
 
     MutClass = getattr(mutations, constants.mutation_class_map[mut])
-
-    if MutClass is None:
-        logging.error("Has not found a class to create a Mutation.")
-        raise LookupError("Has not found a class to create a Mutation")
-
     mutation = MutClass()
-
     return mutation    

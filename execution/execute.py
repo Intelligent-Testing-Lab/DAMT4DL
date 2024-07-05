@@ -2,27 +2,28 @@ import os
 
 from execution.execute_original import execute_original_model
 from execution.execute_mutant import execute_mutants_MO
-from utils import constants, gen_path_name
+from utils import gen_path_name
 
 
 
 def execute_models(config):
-    # read the save path of the prepared model, mutants and original model
-    mutants_path = constants.save_paths['mutated']
-    origianl_path = constants.save_paths['original']
-
-    # orginal model path
-    full_original_path = gen_path_name.gen_original_directory_path(origianl_path, config)
-
-    # execute the original model
-    execute_original_model(full_original_path)
-
+    is_original_exucted = False
+    # execute the mutants
+    print("Executing mutants for each mutation operator")
     for mutation in config.mutations:
-        # mutants path
-        full_mutants_path = os.path.join(gen_path_name.gen_mutant_directory_path(mutants_path, config, mutation), 'mutated') 
+        # full path
+        full_path = gen_path_name.gen_full_path('results', config, mutation)
+
+        # mutant weights path
+        mutant_weights_path = gen_path_name.gen_mutant_weights_path('results', config, mutation)
+
+        # execute the original model, only once
+        if not is_original_exucted:
+            execute_original_model(full_path, config)
+            s_original_exucted = True
 
         # execute the mutants for each mutation operator
-        execute_mutants_MO(full_mutants_path, mutation, full_original_path)
+        execute_mutants_MO(full_path, mutation, mutant_weights_path)
 
 
 

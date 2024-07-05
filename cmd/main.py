@@ -30,11 +30,20 @@ def run():
     importlib.reload(props)
     importlib.reload(const)
 
-    # Generate mutation models
-    gen_mutants.mutate_model(conf)
+    print("=========Read Properties successfully: subject: %s, mode: %s, mutations: %s, criterion: %s =========\n\n" % (conf.subject_name, conf.mode, conf.mutations, conf.criterion))
 
-    # Train the models and save results TODO
+    
+    # Generate mutation models
+    print("========Generating mutants========\n\n")
+    gen_mutants.mutate_model(conf)
+    print("Mutated models generated\n\n")
+
+    # Train the models and save results
+    print("===========Training the origianl and mutated models===========\n\n")
     execute.execute_models(conf)
+    print("===========Training completed and results saved===========\n\n")
+
+    print("===========Experiment completed===========\n\n")
 
 
 if __name__ == '__main__':
