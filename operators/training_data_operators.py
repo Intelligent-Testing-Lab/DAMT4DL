@@ -111,13 +111,17 @@ def operator_make_output_classes_overlap(x_train, y_train, percentage=-1, label1
 
     indexes_to_duplicate = get_random_indexes(indexes_of_label1, percentage).squeeze()
 
-    if x_train_is_list:
-        for i in range(len(x_train)):
-            x_train_portion = np.take(x_train_overlapped[i], indexes_to_duplicate, axis=0)
-            x_train_overlapped[i] = np.concatenate((x_train_overlapped[i], x_train_portion))
-    else:
-        x_train_portion = np.take(x_train_overlapped, indexes_to_duplicate, axis=0)
-        x_train_overlapped = np.concatenate((x_train_overlapped, x_train_portion))
+    # it is a bug in the original code, if x_train is a list,  x_train_overlapped[i] will be a value
+    # if x_train_is_list:
+    #     for i in range(len(x_train)):
+    #         x_train_portion = np.take(x_train_overlapped[i], indexes_to_duplicate, axis=0)
+    #         x_train_overlapped[i] = np.concatenate((x_train_overlapped[i], x_train_portion))
+    # else:
+    #     x_train_portion = np.take(x_train_overlapped, indexes_to_duplicate, axis=0)
+    #     x_train_overlapped = np.concatenate((x_train_overlapped, x_train_portion))
+   
+    x_train_portion = np.take(x_train_overlapped, indexes_to_duplicate, axis=0)
+    x_train_overlapped = np.concatenate((x_train_overlapped, x_train_portion))
 
     if properties.model_type == 'regression':
         indexes_of_label2 = np.argwhere(unique_inverse == index2)
@@ -169,9 +173,9 @@ def delete_training_data(x_train, y_train, percentage, operator):
             unique_label_list_r, unique_inverse, unique_counts = np.unique(y_train_to_delete, return_counts=True,
                                                                            return_inverse=True,
                                                                            axis=0)
-
+            
+            args = np.argwhere(unique_inverse == index)
             if (operator == 'DELETE') or (operator == 'UNBALANCE' and len(args) < average):
-                args = np.argwhere(unique_inverse == index)
                 indexes_to_delete = get_random_indexes(args, percentage)
                 print("deleting " + str(len(indexes_to_delete)) + "  from " + str(len(args)))
                 y_train_to_delete = np.delete(y_train_to_delete, indexes_to_delete, axis=0)
