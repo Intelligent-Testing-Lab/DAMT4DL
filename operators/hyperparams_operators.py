@@ -9,7 +9,16 @@
 from tensorflow.keras import backend as K
 
 import utils.properties as props
+import keras
 
+
+# Define a dictionary to map string names to optimizer classes
+optimizer_map = {
+    'Adam': keras.optimizers.Adam(),
+    'SGD': keras.optimizers.SGD(),
+    'RMSprop': keras.optimizers.RMSprop(),
+    # Add more optimizers as needed
+}
 
 def operator_change_learning_rate(optimiser):
     """Unparse the ast tree, save code to py file.
@@ -20,6 +29,12 @@ def operator_change_learning_rate(optimiser):
 
         Returns: int (0 - success, -1 otherwise)
     """
+    if isinstance(optimiser, str):
+        if optimiser in optimizer_map:
+            optimiser = optimizer_map[optimiser]
+        else:
+            raise ValueError(f"Unsupported optimizer: {optimiser}")
+
 
     if props.change_learning_rate["learning_rate_udp"]:
         new_lr = props.change_learning_rate["learning_rate_udp"]
