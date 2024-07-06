@@ -97,7 +97,6 @@ class Mutation():
         params = {}
         # params["mutation_name"] = mutation_name
 
-        # TODO: write the param extraction
         # FOR NOW it will be like this, after, we read from the file given the mutation name
 
         params["module_name"] = "dummy_operators"
@@ -247,7 +246,6 @@ class ChangeLabelTDMut(Mutation):
         params = {}
         # params["mutation_name"] = mutation_name
 
-        # TODO: write the param extraction
         # FOR NOW it will be like this, after, we read from the file given the mutation name
 
         label = None
@@ -336,7 +334,6 @@ class DeleteTDMut(Mutation):
         params = {}
         # params["mutation_name"] = mutation_name
 
-        # TODO: write the param extraction
         # FOR NOW it will be like this, after, we read from the file given the mutation name
 
         params["module_name"] = "training_data_operators"
@@ -422,7 +419,6 @@ class OutputClassesOverlapTDMUT(Mutation):
         params = {}
         # params["mutation_name"] = mutation_name
 
-        # TODO: write the param extraction
         # FOR NOW it will be like this, after, we read from the file given the mutation name
 
         params["module_name"] = "training_data_operators"
@@ -508,7 +504,6 @@ class UnbalanceTDMut(Mutation):
         params = {}
         # params["mutation_name"] = mutation_name
 
-        # TODO: write the param extraction
         # FOR NOW it will be like this, after, we read from the file given the mutation name
 
         params["module_name"] = "training_data_operators"
@@ -595,7 +590,6 @@ class AddNoiseTDMut(Mutation):
         params = {}
         # params["mutation_name"] = mutation_name
 
-        # TODO: write the param extraction
         # FOR NOW it will be like this, after, we read from the file given the mutation name
 
         params["module_name"] = "training_data_operators"
@@ -1160,7 +1154,6 @@ class ChangeGradientClip(Mutation):
                 if k.arg == 'clipvalue':
                     k.value = ast.Name(id="properties.change_gradient_clip['clipvalue']", ctx=ast.Load())
         else:
-            # TODO: add errrror
             print("we have a problem here")
 
     def apply_mutation(self, node, elem, ind, model_params = None):
@@ -1231,7 +1224,6 @@ class ChangeEarlyStoppingPatience(Mutation):
         params = {}
         # params["mutation_name"] = mutation_name
 
-        # TODO: write the param extraction
         # FOR NOW it will be like this, after, we read from the file given the mutation name
 
         params["module_name"] = "training_process_operators"
@@ -1845,7 +1837,6 @@ class AddWeightsRegularisation(Mutation):
         params = {}
         # params["mutation_name"] = mutation_name
 
-        # TODO: write the param extraction
         # FOR NOW it will be like this, after, we read from the file given the mutation name
 
         params["module_name"] = "training_data_operators"

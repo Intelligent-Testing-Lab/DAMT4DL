@@ -3,6 +3,7 @@ import csv
 import os
 import utils.properties as props
 import utils.constants as const
+import utils.exceptions as e
 
 from analyse.stats import *
 from execution.execution_utils import *
@@ -12,7 +13,7 @@ def execute_mutants_MO(full_path, mutation, mutant_weights_path):
     """
     execute the mutants for each mutation operator
     """
-    print("Executing mutants of mutation opertaor: %s, from path: %s" % (mutation, full_path))
+    print("\n\nExecuting mutants of mutation opertaor: %s, from path: %s" % (mutation, full_path))
     
     # read the muation operator parameters
     mutation_params = {}
@@ -21,58 +22,81 @@ def execute_mutants_MO(full_path, mutation, mutant_weights_path):
     except AttributeError:
         print("No attributes found")
 
-    # TODO handle the udp
-    # # read the model parameters
-    # model_params = getattr(props, "model_properties") # TODO what is model_properties?
-    # udp = [value for key, value in mutation_params.items() if "udp" in key.lower() and "layer" not in key.lower()]
-    # if len(udp) > 0:
-    #     udp = udp[0]
-    # else:
-    #     udp = None
-    # layer_udp = mutation_params.get("layer_udp", None)
+    #  handle the udp
+    model_params = getattr(props, "model_properties")
+    udp = [value for key, value in mutation_params.items() if "udp" in key.lower() and "layer" not in key.lower()]
+    if len(udp) > 0:
+        udp = udp[0]
+    else:
+        udp = None
+    layer_udp = mutation_params.get("layer_udp", None)
 
     # read the search type
     search_type = mutation_params.get("search_type")
     print("Search Type: " + str(search_type))
 
     # execute the mutants
-    for dirpath, _, filenames in os.walk(full_path):
+    for _, _, filenames in os.walk(full_path):
         for filename in filenames:
             # filter the mutated files
             if filename.endswith('.py') and ('mutated' in filename):
-                # based on the search type, execute the mutant
-                if search_type == const.Binary:
-                    print("calling binary search")
+                # get the mutation index
+                mutation_ind = ''
+                if mutation_params.get("layer_mutation", False):
+                    if layer_udp:
+                        if isinstance(layer_udp, list):
+                            inds = layer_udp
+                        else:
+                            inds = [layer_udp]
+                    else:
+                        inds = range(model_params["layers_num"])
 
-                    execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path)
-                elif search_type == const.Exhaustive:
-                    print("calling exhaustive search")
-                    execute_exhaustive_search(full_path, filename, mutation, mutation_params, mutant_weights_path)
+                    for ind in inds:
+                        mutation_params["mutation_target"] = None
+                        mutation_params["current_index"] = ind
+                        mutation_ind = "_" + str(ind)
+
+                        executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind, mutation_ind)
                 else:
-                    # TODO handle when search type is None
-                    pass
-
+                    executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path)
+                        
                 
-                # # TODO handle the layer_muatation - about udp
-                # if mutation_params.get("layer_mutation", False):
-                #     # TODO do not understand
-                #     if layer_udp:
-                #         if isinstance(layer_udp, list):
-                #             inds = layer_udp
-                #         else:
-                #             inds = [layer_udp]
-                #     else:
-                #         inds = range(model_params["layers_num"])
-
-                #     for ind in inds:
-                #         mutation_params["mutation_target"] = None
-                #         mutation_params["current_index"] = ind
-                #         mutation_ind = "_" + str(ind)
                     
-                #     execute_based_on_search(udp, search_type, mutation, mutant, mutation_params, ind, mutation_ind)
-                # else:
-                #     execute_based_on_search(udp, search_type, mutation, mutant, mutation_params)
 
+def executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind = None, mutation_ind = ''):
+    # based on the search type, execute the mutant
+    try:
+        if search_type == const.Binary:
+            print("calling binary search")
+            execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path)
+        elif search_type == const.Exhaustive:
+            print("calling exhaustive search")
+            execute_exhaustive_search(full_path, filename, mutation, mutation_params, mutant_weights_path, mutation_ind)
+        elif udp or search_type == None:
+            # when udp has value or search_type is None, execute the mutant
+            # get the performance of the orginal model
+            origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
+            original_scores = load_scores_from_csv(origianl_scores_file_path)
+            original_accuracy_list = get_accuracy_list_from_scores(original_scores)
+
+            # execute the mutant and get the performance
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, mutation_params, mutant_weights_path))
+
+            # statistic anaylyse for the performance
+            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+            # get the path of the states
+            states_path = os.path.join(full_path, 'stats.cvs')
+
+            with open(states_path, 'a') as f1:
+                writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+                if ind:
+                    writer.writerow([udp, str(p_value), str(effect_size), str(is_sts)])
+                else:
+                    writer.writerow([udp, str(p_value), str(effect_size), str(is_sts)])
+    except e.AddAFMutationError as err:
+        print("Expected Error in mutation: " + str(err))
+        
 
 
 def execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path):
@@ -123,8 +147,6 @@ def execute_binary_search(full_path, filename, mutation, mutation_params, mutant
 # DOI: https://doi.org/10.5281/zenodo.4772465
 # License: Creative Commons Attribution 4.0 International
 def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_weights_path, mutation_ind = ''):
-    # TODO undertand the muation_ind
-
     print("Running Exhaustive Search for " + str(mutation))
     # get the performance of the orginal model
     origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
@@ -162,7 +184,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for loss in const.keras_losses:
             print("Changing into loss:" + str(loss))
             update_mutation_properties(mutation, "loss_function_udp", loss)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -224,13 +246,12 @@ def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weigh
     mutant_weights_path -- the path to save the weights of the mutant
     mutation_ind -- the mutation index 
     """
-    # TODO mutaion_ind understand
-    
+
     scores = [] # save the scores of the mutant
     params_list = concat_params_for_file_name(mutation_params) # concat the parameters for the file name
+    print("Mutant parameters: " + str(params_list))
     # results save path
-    scores_file_path = os.path.join(mutation_path, 'mutant_score_%s_%s%s.csv' % (mutant_filename,  params_list, mutation_ind))
-
+    scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.csv' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
 
     # load the mutant
     transformed_path = os.path.join(mutation_path, mutant_filename).replace(os.path.sep, ".").replace(".py", "")
@@ -243,7 +264,6 @@ def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weigh
 
     # train the mutant and save the results
     if not(os.path.isfile(scores_file_path)):
-        print("training mutant model from scratch")
         for i in range(mutation_params["runs_number"]):
             weight_file_path = os.path.join(mutant_weights_path, 'model_weights%s_%d.h5' % (params_list, i))
             score = m1.main(weight_file_path)
@@ -347,5 +367,5 @@ def search_for_bs_conf(full_path, filename, mutation, my_params, mutant_weights_
         return perfect, conf_nk
     else:
         print("Changing interval to: [" + str(lower_bound) + ", " + str(upper_bound) + "]")
-        return search_for_bs_conf(full_path, mutation, my_params, mutant_weights_path, lower_bound, upper_bound,
-                                  lower_accuracy_list, upper_accuracy_list, states_path, full_path)
+        return search_for_bs_conf(full_path, filename, mutation, my_params, mutant_weights_path, lower_bound, upper_bound,
+                                  lower_accuracy_list, upper_accuracy_list, states_path)

@@ -46,6 +46,9 @@ def p_value_wilcoxon(orig_accuracy_list, accuracy_list):
     """
     Calculate the p-value using the Wilcoxon signed-rank test.
     """
+    # If the lists are the same, return 1.0
+    if orig_accuracy_list == accuracy_list:
+        return 1.0
     w, p_value_w = wilcoxon(orig_accuracy_list, accuracy_list)
 
     return p_value_w
@@ -54,6 +57,10 @@ def p_value_glm(orig_accuracy_list, accuracy_list):
     """
     Calculate the p-value using the Generalized Linear Model.
     """
+    # If the lists are the same, return 1.0
+    if orig_accuracy_list == accuracy_list:
+        return 1.0
+
     list_length = len(orig_accuracy_list)
 
     zeros_list = [0] * list_length

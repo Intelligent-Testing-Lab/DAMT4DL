@@ -81,7 +81,8 @@ def operator_remove_activation_function(model):
 
     tmp = model.get_config()
 
-    print("Removing AF of layer" + str(current_index))
+    print("Removing AF of layer:" + str(current_index))
+
     if tmp['layers'][current_index]['config'].get('activation') and tmp['layers'][current_index]['config']['activation'] != "linear":
         tmp['layers'][current_index]['config']['activation'] = 'linear'
     else:

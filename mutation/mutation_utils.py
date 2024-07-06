@@ -17,6 +17,15 @@ from io import StringIO
 
 from utils.unparse import Unparser
 
+from keras import Sequential as KS
+from tensorflow.keras import Sequential as TKS
+from keras.models import Model as KM
+from tensorflow.keras import Model as TKM
+
+from keras.engine.sequential import Sequential as KES
+from keras.engine.training import Model as KEM
+from tensorflow.python.keras.engine.sequential import Sequential as TKES
+from tensorflow.python.keras.engine.training import Model as TKEM
 
 def unparse_tree(tree, save_path):
     """Unparse the ast tree, save code to py file.
@@ -66,33 +75,13 @@ def generate_import_nodes():
         Returns: list of ast import nodes
     """
 
-    # TODO: get the dict of (mutation type, mutation lib name)
-
     import_nodes = []
-
-    # for type in mutation_types:
-    #     # import_nodes.append(ast.Import(names=[ast.alias(name=const.mutation_imports[type], asname=None)]))
-    #     import_nodes.append(
-    #         ast.ImportFrom(module=const.operator_lib, names=[
-    #             ast.alias(name=const.mutation_imports[type], asname=None),
-    #         ], level=0))
-
     for imp in const.operator_lib:
         # import_nodes.append(ast.Import(names=[ast.alias(name=const.mutation_imports[type], asname=None)]))
         import_nodes.append(
             ast.ImportFrom(module=const.operator_mod, names=[
                 ast.alias(name=imp, asname=None),
             ], level=0))
-
-    # import_nodes.append(
-    #     ast.ImportFrom(module="operators", names=[
-    #         ast.alias(name="training_process_operators", asname=None),
-    #     ], level=0))
-    #
-    # import_nodes.append(
-    #     ast.ImportFrom(module="operators", names=[
-    #         ast.alias(name="activation_function_operators", asname=None),
-    #     ], level=0))
 
     import_nodes.append(
         ast.ImportFrom(module="mutation", names=[
@@ -231,3 +220,21 @@ def is_training_call(elem):
         is_call = True
 
     return is_call
+
+
+####################################################   ####################################################################
+###################################### Mutation Functions ##############################################################
+
+def model_from_config(model, tmp):
+    if isinstance(model, KES):
+        model = KS.from_config(tmp)
+    elif isinstance(model, KEM):
+        model = KM.from_config(tmp)
+    elif isinstance(model, TKES):
+        model = TKS.from_config(tmp)
+    elif isinstance(model, TKEM):
+        model = TKM.from_config(tmp)
+    else:
+        print("raise,log we have probllems")
+
+    return model

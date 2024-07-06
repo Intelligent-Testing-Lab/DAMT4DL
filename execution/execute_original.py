@@ -18,7 +18,6 @@ def execute_original_model(path, config):
     # train the original model and save the results
     scores = []
     if not(os.path.isfile(scores_file_path)):
-        print("training original model from scratch")
         for i in range(const.runs_number_default):
             origian_weights_path = gen_path_name.gen_original_weights_path('results', config)
             weight_file_path = os.path.join(origian_weights_path, 'model_weights_%d.h5' % i)
@@ -30,7 +29,7 @@ def execute_original_model(path, config):
         save_scores_csv(scores, scores_file_path)
         print("The scores of the original model have been saved to the file: %s" % scores_file_path)
     else:
-        print("The original model has been trained before, loading the scores from the file")
+        print("Loading the scores from the file")
         scores = load_scores_from_csv(scores_file_path)
 
     print("Execution of original model completed\n\n")
