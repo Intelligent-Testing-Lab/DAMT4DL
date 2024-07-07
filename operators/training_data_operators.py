@@ -75,9 +75,22 @@ def operator_delete_training_data(x_train, y_train, percentage=-1):
 def unbalance_training_data(x_train, y_train, percentage=-1):
     return delete_training_data(x_train, y_train, percentage, 'UNBALANCE')
 
+def get_list_shape(lst):
+    """
+    Get the shape of the list
+    """
+    if isinstance(lst, list):
+        return [len(lst)] + get_list_shape(lst[0])
+    elif isinstance(lst, np.ndarray):
+        return list(lst.shape)
+    return []
 
 def operator_make_output_classes_overlap(x_train, y_train, percentage=-1, label1=None, label2=None):
     x_train_is_list = isinstance(x_train, list)
+    
+    x_train_shape = [] # get the shape of the list
+    if x_train_is_list:
+        x_train_shape = get_list_shape(x_train)
 
     if x_train_is_list:
         x_train_overlapped = []
@@ -111,17 +124,15 @@ def operator_make_output_classes_overlap(x_train, y_train, percentage=-1, label1
 
     indexes_to_duplicate = get_random_indexes(indexes_of_label1, percentage).squeeze()
 
-    # it is a bug in the original code, if x_train is a list,  x_train_overlapped[i] will be a value
-    # if x_train_is_list:
-    #     for i in range(len(x_train)):
-    #         x_train_portion = np.take(x_train_overlapped[i], indexes_to_duplicate, axis=0)
-    #         x_train_overlapped[i] = np.concatenate((x_train_overlapped[i], x_train_portion))
-    # else:
-    #     x_train_portion = np.take(x_train_overlapped, indexes_to_duplicate, axis=0)
-    #     x_train_overlapped = np.concatenate((x_train_overlapped, x_train_portion))
-   
-    x_train_portion = np.take(x_train_overlapped, indexes_to_duplicate, axis=0)
-    x_train_overlapped = np.concatenate((x_train_overlapped, x_train_portion))
+
+    if len(x_train_shape) > 4:
+        # when x_train has more than 1 dataset such as (2, 1000, 32, 32, 1)
+        for i in range(len(x_train)):
+            x_train_portion = np.take(x_train_overlapped[i], indexes_to_duplicate, axis=0)
+            x_train_overlapped[i] = np.concatenate((x_train_overlapped[i], x_train_portion))
+    else:
+        x_train_portion = np.take(x_train_overlapped, indexes_to_duplicate, axis=0)
+        x_train_overlapped = np.concatenate((x_train_overlapped, x_train_portion))
 
     if properties.model_type == 'regression':
         indexes_of_label2 = np.argwhere(unique_inverse == index2)
