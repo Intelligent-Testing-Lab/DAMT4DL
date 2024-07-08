@@ -2,3 +2,5 @@
 results/*
 Datasets
 Output
+utils/constants.py
+utils/properties.py

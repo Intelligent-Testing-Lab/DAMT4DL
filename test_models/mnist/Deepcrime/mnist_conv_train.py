@@ -9,7 +9,6 @@
 from __future__ import print_function
 import keras, sys
 import os
-
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
@@ -17,7 +16,6 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 import tensorflow as tf
 
-# TODO: make sure the order of the test data or train data should be consitant
 
 def main(model_location):
     ((x_train, y_train), (x_test, y_test)) = mnist.load_data()
@@ -45,8 +43,8 @@ def main(model_location):
 
     if (not os.path.exists(model_location)):
         print("Training the model from scratch")
-        batch_size = 128
-        epochs = 1 # TODO needs to be changed to 12
+        batch_size = 128 
+        epochs = 12
         model = Sequential()
         model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
         model.add(Conv2D(64, (3, 3), activation='relu'))
@@ -59,18 +57,18 @@ def main(model_location):
         model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adadelta(learning_rate = 1.0), metrics=['accuracy'])
         model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=0, validation_data=(x_test, y_test))
         model.save(model_location)
-        score = model.evaluate(x_test, y_test, verbose=0)
+        score = model.evaluate(x_train, y_train, verbose=0)
         print('Test loss:', score[0])
         print('Test accuracy:', score[1])
         return score
     else:
-        print("The model already exists. Loading the model from the disk")
+        print("Loading the model from the file")
         graph1 = tf.Graph()
         with graph1.as_default():
             session1 = tf.compat.v1.Session()
             with session1.as_default():
                 model = tf.keras.models.load_model(model_location)
-                score = model.evaluate(x_test, y_test, verbose=0)
+                score = model.evaluate(x_train, y_train, verbose=0)
                 print(('score:' + str(score)))
         return score
 
