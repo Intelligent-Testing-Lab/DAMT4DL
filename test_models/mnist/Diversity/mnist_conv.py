@@ -9,7 +9,6 @@
 from __future__ import print_function
 import keras, sys
 import os
-
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
@@ -17,8 +16,9 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 import tensorflow as tf
 
-# TODO: make sure the order of the test data or train data should be consitant
-
+# TODO: evaluate:
+# 1. needs to get the every single test case or train case the number
+# 2. when evaluating, needs to use the our own test cases and train cases to evaluate, reference the code_weak.py
 def main(model_location):
     ((x_train, y_train), (x_test, y_test)) = mnist.load_data()
     (img_rows, img_cols) = (28, 28)
@@ -44,7 +44,6 @@ def main(model_location):
     y_test = keras.utils.to_categorical(y_test, num_classes)
 
     if (not os.path.exists(model_location)):
-        print("Training the model from scratch")
         batch_size = 128
         epochs = 12
         model = Sequential()
@@ -57,14 +56,13 @@ def main(model_location):
         model.add(Dropout(0.5))
         model.add(Dense(num_classes, activation='softmax'))
         model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adadelta(learning_rate = 1.0), metrics=['accuracy'])
-        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=0, validation_data=(x_test, y_test))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
         model.save(model_location)
         score = model.evaluate(x_test, y_test, verbose=0)
         print('Test loss:', score[0])
         print('Test accuracy:', score[1])
         return score
     else:
-        print("The model already exists. Loading the model from the disk")
         graph1 = tf.Graph()
         with graph1.as_default():
             session1 = tf.compat.v1.Session()
