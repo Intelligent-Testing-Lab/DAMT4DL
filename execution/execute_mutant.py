@@ -80,13 +80,13 @@ def executed_based_on_search(udp, search_type, full_path, filename, mutation, mu
             original_accuracy_list = get_accuracy_list_from_scores(original_scores)
 
             # execute the mutant and get the performance
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, mutation_params, mutant_weights_path))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, mutation_params, mutant_weights_path, mutation_ind))
 
             # statistic anaylyse for the performance
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             # get the path of the states
-            states_path = os.path.join(full_path, 'stats.cvs')
+            states_path = os.path.join(full_path, 'stats.csv')
 
             with open(states_path, 'a') as f1:
                 writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
@@ -154,7 +154,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
     original_accuracy_list = get_accuracy_list_from_scores(original_scores)
 
     # get the path of the states
-    states_path = os.path.join(full_path, 'stats.cvs')
+    states_path = os.path.join(full_path, 'stats.csv')
 
 
     name = my_params['name']
@@ -244,7 +244,7 @@ def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weigh
     mutant_filename -- the filename of the mutant
     mutation_params -- the parameters of the mutation operator
     mutant_weights_path -- the path to save the weights of the mutant
-    mutation_ind -- the mutation index 
+    mutation_ind -- the layer index of mutation
     """
 
     scores = [] # save the scores of the mutant
@@ -265,7 +265,7 @@ def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weigh
     # train the mutant and save the results
     if not(os.path.isfile(scores_file_path)):
         for i in range(mutation_params["runs_number"]):
-            weight_file_path = os.path.join(mutant_weights_path, 'model_weights%s_%d.h5' % (params_list, i))
+            weight_file_path = os.path.join(mutant_weights_path, 'model_weights_%s%s%s_%d.h5' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i))
             score = m1.main(weight_file_path)
             scores.append(score)
         # save the scores

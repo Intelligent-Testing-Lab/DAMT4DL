@@ -27,6 +27,6 @@ def execute_models(config):
             scores_file_path = os.path.join(full_path, 'original_scores.csv') # save the scores of the original model
             if not(os.path.isfile(scores_file_path)):
                 save_scores_csv(original_scores, scores_file_path)
-           
+
         # execute the mutants for each mutation operator
         execute_mutants_MO(full_path, mutation, mutant_weights_path)

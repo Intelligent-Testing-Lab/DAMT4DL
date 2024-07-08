@@ -2,6 +2,7 @@ import argparse
 import importlib
 import os
 import shutil
+import time
 
 from utils import config
 import utils.properties as props
@@ -32,7 +33,10 @@ def run():
 
     print("=========Read Properties successfully: subject: %s, mode: %s, mutations: %s, criterion: %s =========\n\n" % (conf.subject_name, conf.mode, conf.mutations, conf.criterion))
 
-    
+    # record the experiment running time
+    start_time = time.time()
+    print("===========Experiment started===========\n\n")
+
     # Generate mutation models
     print("========Generating mutants========\n\n")
     gen_mutants.mutate_model(conf)
@@ -43,7 +47,7 @@ def run():
     execute.execute_models(conf)
     print("===========Training completed and results saved===========\n\n")
 
-    print("===========Experiment completed===========\n\n")
+    print("===========Experiment completed: %s seconds===========\n\n" % (time.time() - start_time))
 
 
 if __name__ == '__main__':

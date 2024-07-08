@@ -21,9 +21,7 @@ def execute_original_model(path, config):
         for i in range(const.runs_number_default):
             origian_weights_path = gen_path_name.gen_original_weights_path('results', config)
             weight_file_path = os.path.join(origian_weights_path, 'model_weights_%d.h5' % i)
-
             score = m1.main(weight_file_path)
-
             scores.append(score)
 
         save_scores_csv(scores, scores_file_path)
@@ -31,6 +29,7 @@ def execute_original_model(path, config):
     else:
         print("Loading the scores from the file")
         scores = load_scores_from_csv(scores_file_path)
+        print("The scores of the original model: %s" % scores)
 
     print("Execution of original model completed\n\n")
     return scores
