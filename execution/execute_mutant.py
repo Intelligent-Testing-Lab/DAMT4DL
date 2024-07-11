@@ -1,7 +1,10 @@
-import importlib
-import asyncio
+
+import concurrent.futures
 import csv
+import importlib
 import os
+import threading
+import time
 import utils.properties as props
 import utils.constants as const
 import utils.exceptions as e
@@ -286,9 +289,9 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
     mutant_weights_path -- the path to save the weights of the mutant
     mutation_ind -- the layer index of mutation
     """
-    scores = [] # save the scores of the mutant
+    scores = [0] * mutation_params["runs_number"] # save the scores of each mutant
     params_list = concat_params_for_file_name(mutation_params) # concat the parameters for the file name
-    print("Mutant parameters: " + str(params_list))
+    print("Excute asynchoronously.Mutant parameters: " + str(params_list))
     
     # results save path
     scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.csv' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
@@ -299,7 +302,11 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
 
     # train the mutant and save the results
     if not(os.path.isfile(scores_file_path)):
-        asyncio.run(mutant_task(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, mutation_params))
+        # execute the mutants asynchoronously
+        lock = threading.Lock()  # Create a lock object
+        with concurrent.futures.ThreadPoolExecutor(max_workers=mutation_params["runs_number"]) as executor:
+            futures = [executor.submit(train_mutant, m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i, lock) for i in range(mutation_params["runs_number"])]
+            concurrent.futures.wait(futures)
         # save the scores
         save_scores_csv(scores, scores_file_path)
     else:
@@ -308,14 +315,16 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
         
     return scores
 
-async def mutant_task(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, mutation_params):
-    tasks = [train_mutant(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i) for i in range(mutation_params["runs_number"])]
-    await asyncio.gather(*tasks)
-
-async def train_mutant(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i):
+def train_mutant(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i, lock):
+    """
+    train the mutant and save the results
+    """
+    start_time = time.time()
     weight_file_path = os.path.join(mutant_weights_path, 'model_weights_%s%s%s_%d.h5' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i))
     score = m1.main(weight_file_path)
-    scores.append(score)
+    with lock:
+        scores[i] = score
+    print("Time taken for the mutant name(%s%s%s_%d): %s" % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i, time.time() - start_time))
 
 # This function is adapted from the following source:
 # Title: Replication package for the "DeepCrime: Mutation Testing of Deep Learning Systems based on Real Faults" paper
