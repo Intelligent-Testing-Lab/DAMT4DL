@@ -1,4 +1,5 @@
 import importlib
+import asyncio
 import csv
 import os
 import utils.properties as props
@@ -62,7 +63,6 @@ def execute_mutants_MO(full_path, mutation, mutant_weights_path):
                         
                 
                     
-
 def executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind = None, mutation_ind = ''):
     # based on the search type, execute the mutant
     try:
@@ -80,7 +80,7 @@ def executed_based_on_search(udp, search_type, full_path, filename, mutation, mu
             original_accuracy_list = get_accuracy_list_from_scores(original_scores)
 
             # execute the mutant and get the performance
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, mutation_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, mutation_params, mutant_weights_path, mutation_ind))
 
             # statistic anaylyse for the performance
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
@@ -98,7 +98,7 @@ def executed_based_on_search(udp, search_type, full_path, filename, mutation, mu
         print("Expected Error in mutation: " + str(err))
         
 
-
+# TODO deprecated
 def execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path):
     """
     execute the binary search for a mutant
@@ -162,7 +162,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for optimiser in const.keras_optimisers:
             print("Changing into optimiser:" + str(optimiser))
             update_mutation_properties(mutation, "optimisation_function_udp", optimiser)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -173,7 +173,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for activation in const.activation_functions:
             print("Changing into activation:" + str(activation))
             update_mutation_properties(mutation, "activation_function_udp", activation)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -184,7 +184,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for loss in const.keras_losses:
             print("Changing into loss:" + str(loss))
             update_mutation_properties(mutation, "loss_function_udp", loss)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -195,7 +195,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for dropout in const.dropout_values:
             print("Changing into dropout rate:" + str(dropout))
             update_mutation_properties(mutation, "rate", dropout)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -206,7 +206,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for batch_size in const.batch_sizes:
             print("Changing into batch size:" + str(batch_size))
             update_mutation_properties(mutation, "batch_size", batch_size)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -217,7 +217,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for initialiser in const.keras_initialisers:
             print("Changing into initialisation:" + str(initialiser))
             update_mutation_properties(mutation, "weights_initialisation_udp", initialiser)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -228,14 +228,15 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for regularisation in const.keras_regularisers:
             print("Changing into regularisation:" + str(regularisation))
             update_mutation_properties(mutation, "weights_regularisation_udp", regularisation)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
                 with open(states_path, 'a') as f1:
                     writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
                     writer.writerow([str(regularisation), str(p_value), str(effect_size), str(is_sts)])
-    
+
+# TDOO deprecated
 def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weights_path, mutation_ind = ''):
     """
     execute for a mutant based on the given parameters
@@ -275,6 +276,46 @@ def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weigh
         scores = load_scores_from_csv(scores_file_path)
     return scores
 
+def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_weights_path, mutation_ind = ''):
+    """
+    execute for a mutant based on the given parameters asynchoronously
+    Args:
+    mutation_path -- the directory path of the mutation operator
+    mutant_filename -- the filename of the mutant
+    mutation_params -- the parameters of the mutation operator
+    mutant_weights_path -- the path to save the weights of the mutant
+    mutation_ind -- the layer index of mutation
+    """
+    scores = [] # save the scores of the mutant
+    params_list = concat_params_for_file_name(mutation_params) # concat the parameters for the file name
+    print("Mutant parameters: " + str(params_list))
+    
+    # results save path
+    scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.csv' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
+
+    # load the mutant
+    transformed_path = os.path.join(mutation_path, mutant_filename).replace(os.path.sep, ".").replace(".py", "")
+    m1 = importlib.import_module(transformed_path)
+
+    # train the mutant and save the results
+    if not(os.path.isfile(scores_file_path)):
+        asyncio.run(mutant_task(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, mutation_params))
+        # save the scores
+        save_scores_csv(scores, scores_file_path)
+    else:
+        print("reading scores from file")
+        scores = load_scores_from_csv(scores_file_path)
+        
+    return scores
+
+async def mutant_task(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, mutation_params):
+    tasks = [train_mutant(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i) for i in range(mutation_params["runs_number"])]
+    await asyncio.gather(*tasks)
+
+async def train_mutant(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i):
+    weight_file_path = os.path.join(mutant_weights_path, 'model_weights_%s%s%s_%d.h5' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i))
+    score = m1.main(weight_file_path)
+    scores.append(score)
 
 # This function is adapted from the following source:
 # Title: Replication package for the "DeepCrime: Mutation Testing of Deep Learning Systems based on Real Faults" paper
@@ -309,6 +350,7 @@ def concat_params_for_file_name(params):
 # Link: https://zenodo.org/records/4772465
 # DOI: https://doi.org/10.5281/zenodo.4772465
 # License: Creative Commons Attribution 4.0 International
+# TODO deprecated
 def search_for_bs_conf(full_path, filename, mutation, my_params, mutant_weights_path, lower_bound, upper_bound, lower_accuracy_list, upper_accuracy_list, states_path):
     """
     search for the binary search confidence: until the size of the range becomes smaller than or equal to a predefined precision 𝜖,
