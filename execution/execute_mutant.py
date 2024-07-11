@@ -324,7 +324,7 @@ def train_mutant(m1, scores, mutant_weights_path, mutant_filename, params_list, 
     score = m1.main(weight_file_path)
     with lock:
         scores[i] = score
-    print("Time taken for the mutant name(%s%s%s_%d): %s" % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i, time.time() - start_time))
+    print("Time taken for the mutant name(%s%s%s_%d): %s\n" % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i, time.time() - start_time))
 
 # This function is adapted from the following source:
 # Title: Replication package for the "DeepCrime: Mutation Testing of Deep Learning Systems based on Real Faults" paper
