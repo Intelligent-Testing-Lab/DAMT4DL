@@ -313,3 +313,22 @@ subject_short_name = {'mnist': 'MN', 'movie_recomm': 'MR', 'audio': 'SR', 'lenet
 ###
 Binary = 'binary'
 Exhaustive = 'exhaustive'
+
+###
+# Binary Search configuations
+###
+bs_values = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95]
+
+###
+# Epochs values
+### 
+epochs_values = [
+    1, 2, 3, 4, 5, 6,7,8,9,10
+]
+
+###
+# Learning rate values
+###
+lr_values = [
+   0.001, 0.106, 0.212, 0.317, 0.423, 0.528, 0.634, 0.739, 0.845, 0.950
+]
