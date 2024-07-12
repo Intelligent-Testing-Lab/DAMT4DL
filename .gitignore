@@ -5,3 +5,7 @@ Output
 utils/constants.py
 utils/properties.py
 audio_trained.h5
+config_file/movie/k-score/my_test
+properties/movie/my_test/
+properties/movie/my_test/constants_test.py
+scripts/movie/mytest/
