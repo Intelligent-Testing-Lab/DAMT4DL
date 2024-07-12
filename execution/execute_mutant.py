@@ -314,7 +314,7 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
     mutant_weights_path -- the path to save the weights of the mutant
     mutation_ind -- the layer index of mutation
     """
-    scores = [0] * mutation_params["runs_number"] # save the scores of each mutant
+    scores = [[0,0]] * mutation_params["runs_number"] # save the scores of each mutant
     params_list = concat_params_for_file_name(mutation_params) # concat the parameters for the file name
     print("Excute asynchoronously.Mutant parameters: " + str(params_list))
     

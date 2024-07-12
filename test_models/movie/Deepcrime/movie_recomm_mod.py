@@ -95,6 +95,7 @@ def main(model_location):
     )
 
     if not os.path.exists(model_location):
+        print("Training the model from scratch")
         history = model.fit(
             x=x_train,
             y=y_train,
@@ -107,6 +108,7 @@ def main(model_location):
         model.save_weights(os.path.join(model_location, 'movie_recomm_trained.h5py'))
         score = model.evaluate(x_test, y_test, verbose=0)
     else:
+        print("The model already exists. Loading the model from the disk")
         model.load_weights(os.path.join(model_location, 'movie_recomm_trained.h5py'))
         score = model.evaluate(x_test, y_test, verbose=0)
 
