@@ -329,7 +329,7 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
     if not(os.path.isfile(scores_file_path)):
         # execute the mutants asynchoronously
         lock = threading.Lock()  # Create a lock object
-        with concurrent.futures.ThreadPoolExecutor(max_workers=mutation_params["runs_number"]) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=mutation_params["runs_number"]//2) as executor:
             futures = [executor.submit(train_mutant, m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i, lock) for i in range(mutation_params["runs_number"])]
             concurrent.futures.wait(futures)
         # save the scores

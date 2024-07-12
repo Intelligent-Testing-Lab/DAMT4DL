@@ -17,6 +17,8 @@ module load Anaconda3/2022.05
 # Set up environment variables
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.1/lib64
 export PATH=$PATH:/usr/local/cuda-10.1/bin
+export TF_CPP_MIN_LOG_LEVEL=0 # TODO delete
+
 
 source activate deepcrime # using HPC
 
