@@ -238,6 +238,31 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
                 with open(states_path, 'a') as f1:
                     writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
                     writer.writerow([str(regularisation), str(p_value), str(effect_size), str(is_sts)])
+    elif name == 'change_label' or 'delete_training_data' or 'unbalance_train_data' or 'make_output_classes_overlap' or 'change_learning_rate' or 'change_epochs':
+        execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind)
+
+def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind = ''):
+    """
+    execute mutants which are originally binary search, now is exhaustive search
+    """
+
+    values = const.bs_values
+    if my_params['name'] == 'change_learning_rate':
+        values = const.lr_values
+    elif my_params['name'] == 'change_epochs':
+        values = const.epochs_values
+
+    for bs in values:
+        print("Mutation: %s change into %d percent" % (mutation, bs))
+        update_mutation_properties(mutation, "pct", bs)
+        mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+        is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+        if len(mutation_accuracy_list) > 0:
+            with open(states_path, 'a') as f1:
+                writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+                writer.writerow([str(bs), str(p_value), str(effect_size), str(is_sts)])
+
 
 # TDOO deprecated
 def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weights_path, mutation_ind = ''):
