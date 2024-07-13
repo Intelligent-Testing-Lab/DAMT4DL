@@ -316,7 +316,7 @@ Exhaustive = 'exhaustive'
 ###
 # wokers_num
 ###
-wokers_num = 5
+wokers_num = 4 # GPU: 4
 
 ###
 # Binary Search configuations

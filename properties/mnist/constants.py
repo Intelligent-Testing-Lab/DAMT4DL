@@ -336,4 +336,4 @@ lr_values = [
 ###
 # wokers_num
 ###
-wokers_num = 10
+wokers_num = 4 # GPU: 4

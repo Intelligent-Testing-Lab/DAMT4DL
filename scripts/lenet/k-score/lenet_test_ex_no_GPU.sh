@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --mem=30G  # Request 30 gigabytes of real memory (mem)
-#SBATCH --output=./Output/movie/test/exhaustive_none_GPU.out
-#SBATCH --error=./Output/movie/test/exhaustive_none_GPU.err  # Standard error log
-#SBATCH --tasks-per-node=1  # Specify the number of tasks on each node
-#SBATCH --job-name=mv_te_ex_no
-
 #SBATCH --nodes=1  # Specify a number of nodes
+#SBATCH --mem=30G  # Request 30 gigabytes of real memory (mem)
+#SBATCH --output=./Output/lenet/test/k-score/ex_no_GPU.out
+#SBATCH --error=./Output/lenet/test/k-score/ex_no_GPU.err  # Standard error log
+#SBATCH --tasks-per-node=1  # Specify the number of tasks on each node
+#SBATCH --job-name=le_te_ex_no
+
 #SBATCH --partition=gpu
 #SBATCH --qos=gpu
 #SBATCH --gres=gpu:1
@@ -19,9 +19,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.1/lib64
 export PATH=$PATH:/usr/local/cuda-10.1/bin
 export TF_CPP_MIN_LOG_LEVEL=0 # TODO delete
 
-
-source activate deepcrime # using HPC
-
+source activate deepcrime
 
 export PYTHONPATH=$(pwd)
-python ./cmd/main.py --config ./config_file/movie/k-score/movie_test_ex_no.yaml --properties ./properties/movie/properties.py --constants ./properties/movie/constants.py
+python ./cmd/main.py --config ./config_file/lenet/k-score/lenet_test_ex_no.yaml --properties ./properties/lenet/properties.py --constants ./properties/lenet/constants.py
