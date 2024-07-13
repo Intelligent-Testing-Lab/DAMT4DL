@@ -282,3 +282,8 @@ keras_regularisers = [
 ###
 Binary = 'binary'
 Exhaustive = 'exhaustive'
+
+###
+# wokers_num
+###
+wokers_num = 10

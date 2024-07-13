@@ -312,3 +312,8 @@ subject_short_name = {'mnist': 'MN', 'movie_recomm': 'MR', 'audio': 'SR', 'lenet
 ###
 Binary = 'binary'
 Exhaustive = 'exhaustive'
+
+###
+# wokers_num
+###
+wokers_num = 5

@@ -333,3 +333,8 @@ lr_values = [
 epochs_values = [
     1, 2, 3, 4, 5
 ]
+
+###
+# wokers_num
+###
+wokers_num = 10
