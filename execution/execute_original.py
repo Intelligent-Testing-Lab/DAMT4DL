@@ -43,7 +43,7 @@ def execute_original_model(path, config):
     print("Execution of original model completed\n\n")
     return scores
 
-def train_model(transformed_path, scores, original_weights_path, i, lock):
+def train_model(transformed_path, scores, original_weights_path, i):
     """
     train the mutant and save the results
     """
