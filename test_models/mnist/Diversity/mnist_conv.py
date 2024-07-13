@@ -19,6 +19,7 @@ import tensorflow as tf
 # TODO: evaluate:
 # 1. needs to get the every single test case or train case the number
 # 2. when evaluating, needs to use the our own test cases and train cases to evaluate, reference the code_weak.py
+# TODO: make sure the order of the test data or train data should be consitant
 def main(model_location):
     ((x_train, y_train), (x_test, y_test)) = mnist.load_data()
     (img_rows, img_cols) = (28, 28)

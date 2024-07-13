@@ -17,8 +17,6 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 import tensorflow as tf
 
-# TODO: make sure the order of the test data or train data should be consitant
-
 def main(model_location):
     ((x_train, y_train), (x_test, y_test)) = mnist.load_data()
     (img_rows, img_cols) = (28, 28)

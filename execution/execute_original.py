@@ -1,7 +1,7 @@
 import importlib
 import os
 import utils.constants as const
-import threading
+import multiprocessing
 import concurrent.futures
 import time
 
@@ -17,18 +17,19 @@ def execute_original_model(path, config):
 
     # load the original model 
     transformed_path = os.path.join(path, 'original.py').replace(os.path.sep, ".").replace(".py", "")
-    m1 = importlib.import_module(transformed_path)
 
     # train the original model and save the results
     if not(os.path.isfile(scores_file_path)):
         original_weights_path = gen_path_name.gen_original_weights_path('results', config)
-        lock = threading.Lock()  # Create a lock object
+        
+        manager = multiprocessing.Manager()
         scores = [[0,0]] * const.runs_number_default
+        scores = manager.list(scores)  # Use a managed list to share data between processes
 
         
-        # Execute the original model asynchronously across multiple processes  
-        with concurrent.futures.ThreadPoolExecutor(max_workers=const.wokers_num) as executor:
-            futures = [executor.submit(train_model, m1, scores, original_weights_path, i, lock) for i in range(const.runs_number_default)]
+        # Execute the original model asynchronously across multiple processes 
+        with concurrent.futures.ProcessPoolExecutor(max_workers=const.wokers_num) as executor:
+            futures = [executor.submit(train_model, transformed_path, scores, original_weights_path, i) for i in range(const.runs_number_default)]
             concurrent.futures.wait(futures)
 
         # Save the scores after all futures complete
@@ -49,9 +50,9 @@ def train_model(m1, scores, original_weights_path, i, lock):
     start_time = time.time()
     try:
         weight_file_path = os.path.join(original_weights_path, 'model_weights_%d.h5' % i)
+        m1 = importlib.import_module(transformed_path) # load the model
         score = m1.main(weight_file_path)
-        with lock:
-            scores[i] = score
+        scores[i] = score
     except Exception as e:
         print("Error in training the original model: %s" % e)
     print("Time taken for the original model name(%d): %s\n" % (i, time.time() - start_time))

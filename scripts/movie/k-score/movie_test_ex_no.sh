@@ -11,6 +11,7 @@ module load Java/17.0.4
 module load Anaconda3/2022.05
 
 source activate deepcrime # using HPC
+export TF_CPP_MIN_LOG_LEVEL=0 # TODO delete
 
 export PYTHONPATH=$(pwd)
 python ./cmd/main.py --config ./config_file/movie/k-score/movie_test_ex_no.yaml --properties ./properties/movie/properties.py --constants ./properties/movie/constants.py
