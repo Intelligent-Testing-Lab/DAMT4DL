@@ -317,3 +317,23 @@ Exhaustive = 'exhaustive'
 # wokers_num
 ###
 wokers_num = 5
+
+###
+# Binary Search configuations
+###
+bs_values = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95]
+
+###
+# Learning rate values
+###
+lr_values = [
+  0.000095, 0.00008944, 0.00008389, 0.00007833, 0.00007278, 0.00006722, 0.00006167, 0.00005611, 0.00005056, 0.00005
+]
+
+
+###
+# Epochs values
+### 
+epochs_values = [
+    1, 6, 11, 16, 21, 26, 31, 36, 41, 45
+]
