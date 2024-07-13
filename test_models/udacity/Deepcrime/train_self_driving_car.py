@@ -191,6 +191,7 @@ def main(model_loc):
         metric_value = model.evaluate_generator(validation_generator)
         K.clear_session()
         score = [metric_value, metric_value]
+    print("Score: ", score)
     return score
 
 if __name__ == '__main__':

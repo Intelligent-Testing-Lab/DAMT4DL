@@ -2,8 +2,8 @@
 import concurrent.futures
 import csv
 import importlib
+import multiprocessing
 import os
-import threading
 import time
 import utils.properties as props
 import utils.constants as const
@@ -314,7 +314,6 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
     mutant_weights_path -- the path to save the weights of the mutant
     mutation_ind -- the layer index of mutation
     """
-    scores = [[0,0]] * mutation_params["runs_number"] # save the scores of each mutant
     params_list = concat_params_for_file_name(mutation_params) # concat the parameters for the file name
     print("Excute asynchoronously.Mutant parameters: " + str(params_list))
     
@@ -323,14 +322,16 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
 
     # load the mutant
     transformed_path = os.path.join(mutation_path, mutant_filename).replace(os.path.sep, ".").replace(".py", "")
-    m1 = importlib.import_module(transformed_path)
 
     # train the mutant and save the results
     if not(os.path.isfile(scores_file_path)):
+        manager = multiprocessing.Manager()
+        scores = [[0,0]] * mutation_params["runs_number"] # save the scores of each mutant
+        scores = manager.list(scores)  # Use a managed list to share data between processes
+
         # execute the mutants asynchoronously
-        lock = threading.Lock()  # Create a lock object
-        with concurrent.futures.ThreadPoolExecutor(max_workers=const.wokers_num) as executor:
-            futures = [executor.submit(train_mutant, m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i, lock) for i in range(mutation_params["runs_number"])]
+        with concurrent.futures.ProcessPoolExecutor(max_workers=const.wokers_num) as executor:
+            futures = [executor.submit(train_mutant, transformed_path, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i) for i in range(mutation_params["runs_number"])]
             concurrent.futures.wait(futures)
         # save the scores
         save_scores_csv(scores, scores_file_path)
@@ -340,15 +341,18 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
         
     return scores
 
-def train_mutant(m1, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i, lock):
+def train_mutant(transformed_path, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i):
     """
     train the mutant and save the results
     """
-    start_time = time.time()
-    weight_file_path = os.path.join(mutant_weights_path, 'model_weights_%s%s%s_%d.h5' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i))
-    score = m1.main(weight_file_path)
-    with lock:
+    try:
+        m1 = importlib.import_module(transformed_path)
+        start_time = time.time()
+        weight_file_path = os.path.join(mutant_weights_path, 'model_weights_%s%s%s_%d.h5' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i))
+        score = m1.main(weight_file_path)
         scores[i] = score
+    except Exception as e:
+        print("Error in training the mutant model: %s" % e)
     print("Time taken for the mutant name(%s%s%s_%d): %s\n" % (mutant_filename.replace(".py", ""),  params_list, mutation_ind, i, time.time() - start_time))
 
 # This function is adapted from the following source:
