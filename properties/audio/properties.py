@@ -38,7 +38,7 @@ change_label = {
     "bs_lower_bound": 0,
     "bs_upper_bound": 100,
     "precision": 5,
-    "search_type": 'binary',
+    "search_type": 'exhaustive',
     "bs_rounding_type": 'float'
 }
 # change_label_udp = False
@@ -55,7 +55,7 @@ delete_training_data = {
     "bs_lower_bound": 0,
     "bs_upper_bound": 99,
     "precision": 5,
-    "search_type": 'binary',
+    "search_type": 'exhaustive',
     "bs_rounding_type": 'float'
 }
 # delete_train_data_udp = False
@@ -71,7 +71,7 @@ unbalance_train_data = {
     "bs_lower_bound": 0,
     "bs_upper_bound": 100,
     "precision": 5,
-    "search_type": 'binary',
+    "search_type": 'exhaustive',
     "bs_rounding_type": 'float'
 }
 
@@ -84,7 +84,7 @@ make_output_classes_overlap = {
     "bs_lower_bound": 0,
     "bs_upper_bound": 100,
     "precision": 5,
-    "search_type": 'binary',
+    "search_type": 'exhaustive',
     "bs_rounding_type": 'float'
 }
 
@@ -110,7 +110,7 @@ change_epochs = {
     "bs_upper_bound": 1,
     "bs_rounding_type": 'int',
     "annotation_params": [],
-    "search_type": 'binary',
+    "search_type": 'exhaustive',
     "precision": 5,
     "runs_number": 10,
 }
@@ -132,7 +132,7 @@ change_learning_rate = {
     "bs_lower_bound": 0.001,
     "bs_upper_bound": 0.0001,
     "annotation_params": [],
-    "search_type": 'binary',
+    "search_type": 'exhaustive',
     "runs_number": 10,
     "precision": 0.00001,
     "bs_rounding_type": 'float5'
@@ -309,5 +309,5 @@ change_earlystopping_patience = {
     "bs_lower_bound": 10,
     "bs_upper_bound": 1,
     "pct": 1,
-    "search_type": 'binary'
+    "search_type": 'exhaustive'
 }

@@ -310,7 +310,7 @@ def get_all_data():
 
 def main(model_location):
     BATCH_SIZE = 128
-    EPOCHS = 100
+    EPOCHS = 20
 
     train_ds, test_ds, valid_ds, class_names = get_all_data()
 

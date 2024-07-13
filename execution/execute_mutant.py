@@ -238,7 +238,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
                 with open(states_path, 'a') as f1:
                     writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
                     writer.writerow([str(regularisation), str(p_value), str(effect_size), str(is_sts)])
-    elif name == 'change_label' or 'delete_training_data' or 'unbalance_train_data' or 'make_output_classes_overlap' or 'change_learning_rate' or 'change_epochs' or 'add_noise':
+    elif name == 'change_label' or 'delete_training_data' or 'unbalance_train_data' or 'make_output_classes_overlap' or 'change_learning_rate' or 'change_epochs' or 'add_noise' or 'change_earlystopping_patience':
         execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind)
 
 def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind = ''):
@@ -251,6 +251,8 @@ def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, file
         values = const.lr_values
     elif my_params['name'] == 'change_epochs':
         values = const.epochs_values
+    elif my_params['name'] == 'change_earlystopping_patience':
+        values = const.patience_values
 
     for bs in values:
         print("Mutation: %s change into %d percent" % (mutation, bs))

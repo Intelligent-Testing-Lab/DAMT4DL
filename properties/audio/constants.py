@@ -315,4 +315,30 @@ Exhaustive = 'exhaustive'
 ###
 # wokers_num
 ###
-wokers_num = 5
+wokers_num = 4 # GPU:4, CPU:10
+
+###
+# Binary Search configuations
+###
+bs_values = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95]
+
+###
+# Learning rate values
+###
+lr_values = [
+   0.00095,0.0009,0.00085,0.0008,0.00075,0.0007,0.00065,0.0006,0.00055,0.0005
+]
+
+###
+# Epochs values
+### 
+epochs_values = [
+    1, 3, 5, 7, 9, 10, 11, 12, 13, 14
+]
+
+####
+# Patience values
+###
+patience_values = [
+    1,2,3,4,5,6,7,8,9,10
+]
