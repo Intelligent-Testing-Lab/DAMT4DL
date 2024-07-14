@@ -160,7 +160,7 @@ def main(model_loc):
     parser.add_argument('-k', help='drop out probability', dest='keep_prob', type=float, default=0.5)
     parser.add_argument('-n', help='number of epochs', dest='nb_epoch', type=int, default=50)
     parser.add_argument('-s', help='samples per epoch', dest='samples_per_epoch', type=int, default=100)
-    parser.add_argument('-b', help='batch size', dest='batch_size', type=int, default=64)
+    parser.add_argument('-b', help='batch size', dest='batch_size', type=int, default=16)
     parser.add_argument('-o', help='save best models only', dest='save_best_only', type=s2b, default='true')
     parser.add_argument('-l', help='learning rate', dest='learning_rate', type=float, default=1.0e-4)
     parser.add_argument('--config', type=str, help='Path to the configuration file')
@@ -197,8 +197,8 @@ def main(model_loc):
         x_test = np.load(os.path.join(dataset_folder, 'udacity_weak_test_x.npy'))
         y_test = np.load(os.path.join(dataset_folder, 'udacity_weak_test_y.npy'))
         metric_value = model.evaluate(x_test, y_test, verbose=0)
-        K.clear_session()
         score = [metric_value, metric_value]
+    K.clear_session()
     return score
 
 if __name__ == '__main__':

@@ -157,7 +157,7 @@ def main(model_loc):
     parser.add_argument('-k', help='drop out probability', dest='keep_prob', type=float, default=0.5)
     parser.add_argument('-n', help='number of epochs', dest='nb_epoch', type=int, default=50)
     parser.add_argument('-s', help='samples per epoch', dest='samples_per_epoch', type=int, default=100)
-    parser.add_argument('-b', help='batch size', dest='batch_size', type=int, default=64)
+    parser.add_argument('-b', help='batch size', dest='batch_size', type=int, default=16)
     parser.add_argument('-o', help='save best models only', dest='save_best_only', type=s2b, default='true')
     parser.add_argument('-l', help='learning rate', dest='learning_rate', type=float, default=1.0e-4)
     parser.add_argument('--config', type=str, help='Path to the configuration file')
@@ -191,8 +191,9 @@ def main(model_loc):
         print('model exists')
         model = tensorflow.keras.models.load_model(model_loc)
         metric_value = model.evaluate_generator(train_generator)
-        K.clear_session()
         score = [metric_value, metric_value]
+    
+    K.clear_session() # Clear the session to avoid memory leaks
     return score
 
 if __name__ == '__main__':
