@@ -107,7 +107,7 @@ def main(model_location):
             metrics=[angle_loss_fn],
         )
 
-        history = model.fit([x_img_train, x_ha_train], y_gaze_train, batch_size=128, epochs=5, shuffle=True, validation_split=0.1, verbose=0)
+        history = model.fit([x_img_train, x_ha_train], y_gaze_train, batch_size=128, epochs=50, shuffle=True, validation_split=0.1, verbose=0)
         model.save(model_location)
 
         score = model.evaluate([x_img_test, x_ha_test], y_gaze_test, verbose=0)
