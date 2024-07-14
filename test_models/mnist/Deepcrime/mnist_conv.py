@@ -60,6 +60,8 @@ def main(model_location):
         score = model.evaluate(x_test, y_test, verbose=0)
         print('Test loss:', score[0])
         print('Test accuracy:', score[1])
+
+        K.clear_session() # Clear the session to avoid memory leaks
         return score
     else:
         print("The model already exists. Loading the model from the disk")
@@ -70,6 +72,7 @@ def main(model_location):
                 model = tf.keras.models.load_model(model_location)
                 score = model.evaluate(x_test, y_test, verbose=0)
                 print(('score:' + str(score)))
+        K.clear_session() # Clear the session to avoid memory leaks
         return score
 
 if __name__ == '__main__':
