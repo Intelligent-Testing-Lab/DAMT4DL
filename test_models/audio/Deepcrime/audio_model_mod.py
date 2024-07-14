@@ -12,6 +12,7 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras import backend as K
 
 from pathlib import Path
 
@@ -309,7 +310,7 @@ def get_all_data():
     return train_ds, test_ds, valid_ds, class_names
 
 def main(model_location):
-    BATCH_SIZE = 128
+    BATCH_SIZE = 16
     EPOCHS = 20
 
     train_ds, test_ds, valid_ds, class_names = get_all_data()
@@ -347,6 +348,7 @@ def main(model_location):
         model.compile(optimizer='Adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         score = model.evaluate(test_ds, verbose=0)
 
+    K.clear_session() # Clear the session to avoid memory leaks
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
     return score

@@ -12,6 +12,7 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras import backend as K
 
 from pathlib import Path
 
@@ -119,7 +120,7 @@ def get_all_data():
     print(os.getcwd())
     DATASET_ROOT = os.path.join('Datasets', 'Audio', '16000_pcm_speeches')
 
-    BATCH_SIZE = 128
+    BATCH_SIZE = 16
     # The folders in which we will put the audio samples and the noise samples
     AUDIO_SUBFOLDER = "audio"
     NOISE_SUBFOLDER = "noise"
@@ -356,6 +357,7 @@ def main(model_location):
         model.compile(optimizer='Adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         score = model.evaluate(weak_test_ds, verbose=0)
 
+    K.clear_session() # Clear the session to avoid memory leaks
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
     return score
