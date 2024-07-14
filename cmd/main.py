@@ -31,7 +31,7 @@ def run():
     importlib.reload(props)
     importlib.reload(const)
 
-    print("=========Read Properties successfully: subject: %s, mode: %s, mutations: %s, criterion: %s =========\n\n" % (conf.subject_name, conf.mode, conf.mutations, conf.criterion))
+    print("=========Read Properties successfully: subject: %s, mode: %s, mutations: %s, criterion: %s, workers_num: %s=========\n\n" % (conf.subject_name, conf.mode, conf.mutations, conf.criterion, conf.workers_num))
 
     # record the experiment running time
     start_time = time.time()

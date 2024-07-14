@@ -28,7 +28,7 @@ def execute_original_model(path, config):
 
         
         # Execute the original model asynchronously across multiple processes 
-        with concurrent.futures.ProcessPoolExecutor(max_workers=const.wokers_num) as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=config.workers_num) as executor:
             futures = [executor.submit(train_model, transformed_path, scores, original_weights_path, i) for i in range(const.runs_number_default)]
             concurrent.futures.wait(futures)
 

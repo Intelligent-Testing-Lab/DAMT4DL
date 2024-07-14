@@ -13,7 +13,7 @@ from analyse.stats import *
 from execution.execution_utils import *
 
 
-def execute_mutants_MO(full_path, mutation, mutant_weights_path):
+def execute_mutants_MO(full_path, mutation, mutant_weights_path,worker_num = 1):
     """
     execute the mutants for each mutation operator
     """
@@ -60,21 +60,21 @@ def execute_mutants_MO(full_path, mutation, mutant_weights_path):
                         mutation_params["current_index"] = ind
                         mutation_ind = "_" + str(ind)
 
-                        executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind, mutation_ind)
+                        executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind, mutation_ind, worker_num=worker_num)
                 else:
-                    executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path)
+                    executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, worker_num=worker_num)
                         
                 
                     
-def executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind = None, mutation_ind = ''):
+def executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind = None, mutation_ind = '', worker_num = 1):
     # based on the search type, execute the mutant
     try:
         if search_type == const.Binary:
             print("calling binary search")
-            execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path)
+            execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path) # TODO deprecated
         elif search_type == const.Exhaustive:
             print("calling exhaustive search")
-            execute_exhaustive_search(full_path, filename, mutation, mutation_params, mutant_weights_path, mutation_ind)
+            execute_exhaustive_search(full_path, filename, mutation, mutation_params, mutant_weights_path, mutation_ind, worker_num=worker_num)
         elif udp or search_type == None:
             # when udp has value or search_type is None, execute the mutant
             # get the performance of the orginal model
@@ -83,7 +83,7 @@ def executed_based_on_search(udp, search_type, full_path, filename, mutation, mu
             original_accuracy_list = get_accuracy_list_from_scores(original_scores)
 
             # execute the mutant and get the performance
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, mutation_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, mutation_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
 
             # statistic anaylyse for the performance
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
@@ -149,7 +149,7 @@ def execute_binary_search(full_path, filename, mutation, mutation_params, mutant
 # Link: https://zenodo.org/records/4772465
 # DOI: https://doi.org/10.5281/zenodo.4772465
 # License: Creative Commons Attribution 4.0 International
-def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_weights_path, mutation_ind = ''):
+def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_weights_path, mutation_ind = '', worker_num = 1):
     print("Running Exhaustive Search for " + str(mutation))
     # get the performance of the orginal model
     origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
@@ -165,7 +165,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for optimiser in const.keras_optimisers:
             print("Changing into optimiser:" + str(optimiser))
             update_mutation_properties(mutation, "optimisation_function_udp", optimiser)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -176,7 +176,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for activation in const.activation_functions:
             print("Changing into activation:" + str(activation))
             update_mutation_properties(mutation, "activation_function_udp", activation)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -187,7 +187,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for loss in const.keras_losses:
             print("Changing into loss:" + str(loss))
             update_mutation_properties(mutation, "loss_function_udp", loss)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -198,7 +198,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for dropout in const.dropout_values:
             print("Changing into dropout rate:" + str(dropout))
             update_mutation_properties(mutation, "rate", dropout)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -209,7 +209,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for batch_size in const.batch_sizes:
             print("Changing into batch size:" + str(batch_size))
             update_mutation_properties(mutation, "batch_size", batch_size)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num))    
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -220,7 +220,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for initialiser in const.keras_initialisers:
             print("Changing into initialisation:" + str(initialiser))
             update_mutation_properties(mutation, "weights_initialisation_udp", initialiser)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -231,7 +231,7 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for regularisation in const.keras_regularisers:
             print("Changing into regularisation:" + str(regularisation))
             update_mutation_properties(mutation, "weights_regularisation_udp", regularisation)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
             is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
             if len(mutation_accuracy_list) > 0:
@@ -239,9 +239,9 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
                     writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
                     writer.writerow([str(regularisation), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'change_label' or 'delete_training_data' or 'unbalance_train_data' or 'make_output_classes_overlap' or 'change_learning_rate' or 'change_epochs' or 'add_noise' or 'change_earlystopping_patience':
-        execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind)
+        execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind, worker_num=worker_num)
 
-def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind = ''):
+def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind = '', worker_num = 1):
     """
     execute mutants which are originally binary search, now is exhaustive search
     """
@@ -257,7 +257,7 @@ def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, file
     for bs in values:
         print("Mutation: %s change into %d percent" % (mutation, bs))
         update_mutation_properties(mutation, "pct", bs)
-        mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind))
+        mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
         is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
         if len(mutation_accuracy_list) > 0:
@@ -306,7 +306,7 @@ def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weigh
         scores = load_scores_from_csv(scores_file_path)
     return scores
 
-def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_weights_path, mutation_ind = ''):
+def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_weights_path, mutation_ind = '', worker_num = 1):
     """
     execute for a mutant based on the given parameters asynchoronously
     Args:
@@ -332,7 +332,7 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
         scores = manager.list(scores)  # Use a managed list to share data between processes
 
         # execute the mutants asynchoronously
-        with concurrent.futures.ProcessPoolExecutor(max_workers=const.wokers_num) as executor:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=worker_num) as executor:
             futures = [executor.submit(train_mutant, transformed_path, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i) for i in range(mutation_params["runs_number"])]
             concurrent.futures.wait(futures)
         # save the scores
