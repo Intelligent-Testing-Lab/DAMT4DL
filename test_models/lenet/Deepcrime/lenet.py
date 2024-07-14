@@ -14,6 +14,8 @@ from tensorflow.keras.layers import Input, Concatenate, Conv2D, Flatten, Dense, 
 from tensorflow.keras.models import Model
 from tensorflow.keras.initializers import RandomNormal, Constant, GlorotNormal
 from tensorflow import math
+from tensorflow.keras import backend as K
+
 import matplotlib.pyplot as plt
 
 
@@ -110,6 +112,9 @@ def main(model_location):
 
         score = model.evaluate([x_img_test, x_ha_test], y_gaze_test, verbose=0)
         print("score:" + str(score))
+
+        K.clear_session() # Clear the session to avoid memory leaks
+
         return score
     else:
         print("Loading the model from the saved location")
@@ -120,6 +125,9 @@ def main(model_location):
                 model = tf.keras.models.load_model(model_location, custom_objects={'angle_loss_fn': angle_loss_fn})
                 score = model.evaluate([x_img_test, x_ha_test], y_gaze_test, verbose=0)
                 print("score:" + str(score))
+        
+        K.clear_session() # Clear the session to avoid memory leaks
+    
         return score
 
 

@@ -1,0 +1,11 @@
+subject_name: lenet
+original_path: test_models/lenet/Deepcrime/lenet.py
+# mutations: ["remove_validation_set", "change_optimisation_function", "change_loss_function",
+#                         "remove_activation_function", "remove_bias", "add_weights_regularisation",
+#                         "add_activation_function", "change_activation_function", "change_weights_initialisation",
+#                         "change_epochs", "change_batch_size", "change_learning_rate", "delete_training_data",
+#                         "add_noise", "unbalance_train_data", "make_output_classes_overlap", "change_label",]
+mutations: ["remove_validation_set"]
+workers_num: 1
+mode: test
+criterion: k_score #["k_score", "d_score", "d_score_train"]
