@@ -3,7 +3,7 @@
 #SBATCH --mem=30G  # Request 30 gigabytes of real memory (mem)
 #SBATCH --output=./Output/lenet/test/k-score/bs.out
 #SBATCH --error=./Output/lenet/test/k-score/bs.err  # Standard error log
-#SBATCH --ntasks=5  # Specify a number of tasks for the array
+#SBATCH --ntasks=15  # Specify a number of tasks for the array
 #SBATCH --job-name=le_te_bs
 
 module load Java/17.0.4
