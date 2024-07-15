@@ -3,7 +3,7 @@
 #SBATCH --mem=30G  # Request 30 gigabytes of real memory (mem)
 #SBATCH --output=./Output/mnist/test/k-score/bs.out
 #SBATCH --error=./Output/mnist/test/k-score/bs.err  # Standard error log
-#SBATCH --ntasks=10  # Specify a number of tasks for your job
+#SBATCH --ntasks=15  # Specify a number of tasks for your job
 #SBATCH --job-name=mn_te_bs
 
 module load Java/17.0.4
