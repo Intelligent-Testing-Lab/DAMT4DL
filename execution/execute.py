@@ -29,4 +29,4 @@ def execute_models(config):
                 save_scores_csv(original_scores, scores_file_path)
 
         # execute the mutants for each mutation operator
-        execute_mutants_MO(full_path, mutation, mutant_weights_path, worker_num=config.workers_num)
+        execute_mutants_MO(full_path, mutation, mutant_weights_path, worker_num=config.workers_num, criterion=config.criterion)

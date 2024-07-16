@@ -27,6 +27,26 @@ def save_scores_csv(scores, file_path, mutation_params = None):
         writer = csv.writer(file)
         writer.writerows(row_list)
 
+def save_scores_csv_d_score(scores, file_path, mutation_params=None):
+    """ Script that renames the file with trained model for d_score
+
+        Keyword arguments:
+        file_path -- path to the file
+        ... params needed to constuct new name
+
+        Returns: ...
+    """
+    row_list = []
+
+    for ind, single_scores in enumerate(scores):
+        for score in single_scores:
+            row_list.append([ind+1, score[0], score[1], score[2]])
+
+    with open(file_path, "w+", newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(row_list)
+
+
 def load_scores_from_csv(file_path):
     """
     Load scores from csv file
@@ -39,6 +59,20 @@ def load_scores_from_csv(file_path):
                 scores.append((float(row[1]), float(row[2])))
 
     return scores
+
+def load_scores_from_csv_d_score(file_path, runs_number):
+    """
+    Load scores from csv file for d_score
+    """
+    scores = [[] for i in range(runs_number)]
+    with open(file_path) as csvfile:
+        read_csv = csv.reader(csvfile, delimiter=',')
+        for row in read_csv:
+            if any(x.strip() for x in row):
+                scores[int(row[0])-1].append([int(row[1]), float(row[2]), float(row[3])])
+
+    return scores
+
 
 def get_accuracy_list_from_scores(scores):
     """
