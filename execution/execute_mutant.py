@@ -335,8 +335,11 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
         with concurrent.futures.ProcessPoolExecutor(max_workers=worker_num) as executor:
             futures = [executor.submit(train_mutant, transformed_path, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i) for i in range(mutation_params["runs_number"])]
             concurrent.futures.wait(futures)
-        # save the scores
-        save_scores_csv(scores, scores_file_path)
+        
+        # check if the scores are not empty
+        if scores[0] != [0,0]:
+            # save the scores
+            save_scores_csv(scores, scores_file_path)
     else:
         print("reading scores from file")
         scores = load_scores_from_csv(scores_file_path)
