@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --nodes=10  # Specify a number of nodes
+#SBATCH --nodes=1  # Specify a number of nodes
 #SBATCH --mem=30G  # Request 30 gigabytes of real memory (mem)
-#SBATCH --output=./Output/udacity/test/bs.out
-#SBATCH --error=./Output/udacity/test/bs.err  # Standard error log
-#SBATCH --tasks-per-node=1  # Specify the number of tasks on each node
+#SBATCH --output=./Output/udacity/test/bs_%j.out
+#SBATCH --error=./Output/udacity/test/bs_%j.err  # Standard error log
+#SBATCH --ntasks=15  # Specify a number of tasks for the array
 #SBATCH --job-name=ud_te_bs
 
 module load Java/17.0.4
