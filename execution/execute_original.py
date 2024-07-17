@@ -13,7 +13,10 @@ def execute_original_model(path, config):
     print("Executing original model")
 
     # results save path
-    scores_file_path = os.path.join(path, 'original_scores.csv') # save the scores of the original model
+    if config.criterion == 'k_score':
+        scores_file_path = os.path.join(path, 'original_scores.csv') # save the scores of the original model
+    elif config.criterion == 'd_score':
+        scores_file_path = os.path.join(path, 'original_scores.npy')
 
     # load the original model 
     transformed_path = os.path.join(path, 'original.py').replace(os.path.sep, ".").replace(".py", "")
@@ -40,9 +43,10 @@ def execute_original_model(path, config):
         if config.criterion == 'k_score':
             save_scores_csv(list(scores), scores_file_path)
         elif config.criterion == 'd_score':
-            save_scores_csv_d_score(list(scores), scores_file_path)
+            save_scores_npy_d_score(list(scores), scores_file_path)
         print(f"The scores of the original model have been saved to the file: {scores_file_path}")
     else:
+        # TODO depreacted
         print("Loading the scores from the file")
         if config.criterion == 'k_score':
             scores = load_scores_from_csv(scores_file_path)

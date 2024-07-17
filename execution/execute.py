@@ -24,12 +24,14 @@ def execute_models(config):
             is_original_exucted = True
         else:
             # save the scores of the original model
-            scores_file_path = os.path.join(full_path, 'original_scores.csv') # save the scores of the original model
-            if not(os.path.isfile(scores_file_path)):
-                if config.criterion == 'k_score':
+            if config.criterion == 'k_score':
+                scores_file_path = os.path.join(full_path, 'original_scores.csv') # save the scores of the original model
+                if not(os.path.isfile(scores_file_path)):
                     save_scores_csv(original_scores, scores_file_path)
-                elif config.criterion == 'd_score':
-                    save_scores_csv_d_score(original_scores, scores_file_path)
+            elif config.criterion == 'd_score':
+                scores_file_path = os.path.join(full_path, 'original_scores.npy')
+                if not(os.path.isfile(scores_file_path)):
+                    save_scores_npy_d_score(original_scores, scores_file_path)
 
         # execute the mutants for each mutation operator
         execute_mutants_MO(full_path, mutation, mutant_weights_path, worker_num=config.workers_num, criterion=config.criterion)

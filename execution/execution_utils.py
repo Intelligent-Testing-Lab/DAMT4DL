@@ -8,6 +8,7 @@
 
 import csv
 import utils.properties as props
+import numpy as np
 
 def save_scores_csv(scores, file_path, mutation_params = None):
     """ Script that renames the file with trained model
@@ -27,12 +28,13 @@ def save_scores_csv(scores, file_path, mutation_params = None):
         writer = csv.writer(file)
         writer.writerows(row_list)
 
-def save_scores_csv_d_score(scores, file_path, mutation_params=None):
+
+def save_scores_npy_d_score(scores, file_path, mutation_params=None):
     """ Script that renames the file with trained model for d_score
 
         Keyword arguments:
         file_path -- path to the file
-        ... params needed to constuct new name
+        ... params needed to construct new name
 
         Returns: ...
     """
@@ -41,10 +43,10 @@ def save_scores_csv_d_score(scores, file_path, mutation_params=None):
     for ind, single_scores in enumerate(scores):
         for score in single_scores:
             row_list.append([ind+1, score[0], score[1], score[2]])
+    
+    row_array = np.array(row_list)
+    np.save(file_path, row_array)
 
-    with open(file_path, "w+", newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(row_list)
 
 
 def load_scores_from_csv(file_path):

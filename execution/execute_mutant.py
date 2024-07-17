@@ -154,13 +154,13 @@ def execute_binary_search(full_path, filename, mutation, mutation_params, mutant
 # License: Creative Commons Attribution 4.0 International
 def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_weights_path, mutation_ind = '', worker_num = 1, criterion='k_score'):
     print("Running Exhaustive Search for " + str(mutation))
-    # get the performance of the orginal model
-    origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
-    original_scores = load_scores_from_csv(origianl_scores_file_path)
-    original_accuracy_list = get_accuracy_list_from_scores(original_scores)
+    # # get the performance of the orginal model
+    # origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
+    # original_scores = load_scores_from_csv(origianl_scores_file_path)
+    # original_accuracy_list = get_accuracy_list_from_scores(original_scores)
 
-    # get the path of the states
-    states_path = os.path.join(full_path, 'stats.csv')
+    # # get the path of the states
+    # states_path = os.path.join(full_path, 'stats.csv') # TODO deprecated
 
 
     name = my_params['name']
@@ -263,9 +263,9 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
             #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
             #         writer.writerow([str(regularisation), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'change_label' or 'delete_training_data' or 'unbalance_train_data' or 'make_output_classes_overlap' or 'change_learning_rate' or 'change_epochs' or 'add_noise' or 'change_earlystopping_patience':
-        execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind, worker_num=worker_num, criterion=criterion)
+        execute_mutants_exhaustive(mutation, full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
 
-def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind = '', worker_num = 1, criterion='k_score'):
+def execute_mutants_exhaustive(mutation, full_path, filename, my_params, mutant_weights_path, mutation_ind = '', worker_num = 1, criterion='k_score'):
     """
     execute mutants which are originally binary search, now is exhaustive search
     """
@@ -347,7 +347,10 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
     print("Excute asynchoronously.Mutant parameters: " + str(params_list))
     
     # results save path
-    scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.csv' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
+    if criterion == 'k_score':
+        scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.csv' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
+    elif criterion == 'd_score':
+        scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.npy' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
 
     # load the mutant
     transformed_path = os.path.join(mutation_path, mutant_filename).replace(os.path.sep, ".").replace(".py", "")
@@ -376,8 +379,9 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
         elif criterion == 'd_score':
             if scores[0] != []:
                 # save the scores
-                save_scores_csv_d_score(scores, scores_file_path)
+                save_scores_npy_d_score(scores, scores_file_path)
     else:
+        # TODO deprecated
         print("reading scores from file")
         if criterion == 'k_score':
             scores = load_scores_from_csv(scores_file_path)
