@@ -9,17 +9,28 @@
 from __future__ import print_function
 import keras, sys
 import os
+
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 import tensorflow as tf
+import numpy as np
 
-# TODO: evaluate:
-# 1. needs to get the every single test case or train case the number
-# 2. when evaluating, needs to use the our own test cases and train cases to evaluate, reference the code_weak.py
-# TODO: make sure the order of the test data or train data should be consitant
+def evaluate_model(model, x_data, y_data):
+    """
+    Evaluate the model on single data of whole dataset
+    """
+    scores = []
+    for i, (x,y) in enumerate(zip(x_data, y_data)):
+        x_batch = x[np.newaxis, ...]
+        y_batch = np.array([y])
+        single_score = model.evaluate(x_batch, y_batch, verbose=0)
+        scores.append([i, single_score[0], single_score[1]]) # index, score[0], score[1]
+    return scores
+
+
 def main(model_location):
     ((x_train, y_train), (x_test, y_test)) = mnist.load_data()
     (img_rows, img_cols) = (28, 28)
@@ -45,6 +56,7 @@ def main(model_location):
     y_test = keras.utils.to_categorical(y_test, num_classes)
 
     if (not os.path.exists(model_location)):
+        print("Training the model from scratch")
         batch_size = 128
         epochs = 12
         model = Sequential()
@@ -57,21 +69,25 @@ def main(model_location):
         model.add(Dropout(0.5))
         model.add(Dense(num_classes, activation='softmax'))
         model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adadelta(learning_rate = 1.0), metrics=['accuracy'])
-        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test, y_test))
+        model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=0, validation_data=(x_test, y_test))
         model.save(model_location)
-        score = model.evaluate(x_test, y_test, verbose=0)
-        print('Test loss:', score[0])
-        print('Test accuracy:', score[1])
-        return score
+        # score = model.evaluate(x_test, y_test, verbose=0)
+        d_scores = evaluate_model(model, x_test, y_test)
+        print("The length of the scores: %s" % len(d_scores))
+        K.clear_session() # Clear the session to avoid memory leaks
+        return d_scores
     else:
+        print("The model already exists. Loading the model from the disk")
         graph1 = tf.Graph()
         with graph1.as_default():
             session1 = tf.compat.v1.Session()
             with session1.as_default():
                 model = tf.keras.models.load_model(model_location)
-                score = model.evaluate(x_test, y_test, verbose=0)
-                print(('score:' + str(score)))
-        return score
+                # score = model.evaluate(x_test, y_test, verbose=0)
+                d_scores = evaluate_model(model, x_test, y_test)
+                print("The length of the scores: %s" % len(d_scores))
+        K.clear_session() # Clear the session to avoid memory leaks
+        return d_scores
 
 if __name__ == '__main__':
     score = main('')

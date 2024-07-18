@@ -1,13 +1,14 @@
 import yaml # type: ignore
 
 class Config:
-    def __init__(self, subject_name, original_path, mutations, mode, criterion, workers_num=1):
+    def __init__(self, subject_name='', original_path='', mutations=[], mode='test', criterion='k_score', workers_num=1, algorithm='k_score'):
         self.subject_name = subject_name
         self.original_path = original_path
         self.mutations = mutations
         self.mode = mode
         self.criterion = criterion
         self.workers_num = workers_num
+        self.algorithm = algorithm
    
     @staticmethod
     def from_yaml(file_path):

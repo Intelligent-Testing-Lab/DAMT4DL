@@ -11,5 +11,8 @@ properties/movie/my_test/constants_test.py
 scripts/movie/mytest/
 scripts/audio/my-test/audio_test_ex_no_GPU.sh
 scripts/audio/my-test/audio_test_ex_no.sh
+test.py
+test.sh
+config_file/movie/my_test/movie_test.yaml
 EPOCH-020.h5
 EPOCH-040.h5

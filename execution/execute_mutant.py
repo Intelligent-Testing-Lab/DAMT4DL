@@ -13,7 +13,7 @@ from analyse.stats import *
 from execution.execution_utils import *
 
 
-def execute_mutants_MO(full_path, mutation, mutant_weights_path,worker_num = 1):
+def execute_mutants_MO(full_path, mutation, mutant_weights_path,worker_num = 1, criterion='k_score'):
     """
     execute the mutants for each mutation operator
     """
@@ -60,13 +60,13 @@ def execute_mutants_MO(full_path, mutation, mutant_weights_path,worker_num = 1):
                         mutation_params["current_index"] = ind
                         mutation_ind = "_" + str(ind)
 
-                        executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind, mutation_ind, worker_num=worker_num)
+                        executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind, mutation_ind, worker_num=worker_num, criterion=criterion)
                 else:
-                    executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, worker_num=worker_num)
+                    executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, worker_num=worker_num, criterion=criterion)
                         
                 
                     
-def executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind = None, mutation_ind = '', worker_num = 1):
+def executed_based_on_search(udp, search_type, full_path, filename, mutation, mutation_params, mutant_weights_path, ind = None, mutation_ind = '', worker_num = 1, criterion='k_score'):
     # based on the search type, execute the mutant
     try:
         if search_type == const.Binary:
@@ -74,29 +74,32 @@ def executed_based_on_search(udp, search_type, full_path, filename, mutation, mu
             execute_binary_search(full_path, filename, mutation, mutation_params, mutant_weights_path) # TODO deprecated
         elif search_type == const.Exhaustive:
             print("calling exhaustive search")
-            execute_exhaustive_search(full_path, filename, mutation, mutation_params, mutant_weights_path, mutation_ind, worker_num=worker_num)
+            execute_exhaustive_search(full_path, filename, mutation, mutation_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
         elif udp or search_type == None:
             # when udp has value or search_type is None, execute the mutant
-            # get the performance of the orginal model
-            origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
-            original_scores = load_scores_from_csv(origianl_scores_file_path)
-            original_accuracy_list = get_accuracy_list_from_scores(original_scores)
+            execute_mutant_as(full_path, filename, mutation_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
 
-            # execute the mutant and get the performance
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, mutation_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
+            # TODO deprecated: calculate the states of the mutants
+            # # get the performance of the orginal model
+            # origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
+            # original_scores = load_scores_from_csv(origianl_scores_file_path)
+            # original_accuracy_list = get_accuracy_list_from_scores(original_scores)
 
-            # statistic anaylyse for the performance
-            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+            # # execute the mutant and get the performance
+            # mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, mutation_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion))
 
-            # get the path of the states
-            states_path = os.path.join(full_path, 'stats.csv')
+            # # statistic anaylyse for the performance
+            # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
-            with open(states_path, 'a') as f1:
-                writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                if ind:
-                    writer.writerow([udp, str(p_value), str(effect_size), str(is_sts)])
-                else:
-                    writer.writerow([udp, str(p_value), str(effect_size), str(is_sts)])
+            # # get the path of the states
+            # states_path = os.path.join(full_path, 'stats.csv')
+
+            # with open(states_path, 'a') as f1:
+            #     writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+            #     if ind:
+            #         writer.writerow([udp, str(p_value), str(effect_size), str(is_sts)])
+            #     else:
+            #         writer.writerow([udp, str(p_value), str(effect_size), str(is_sts)])
     except e.AddAFMutationError as err:
         print("Expected Error in mutation: " + str(err))
         
@@ -149,15 +152,15 @@ def execute_binary_search(full_path, filename, mutation, mutation_params, mutant
 # Link: https://zenodo.org/records/4772465
 # DOI: https://doi.org/10.5281/zenodo.4772465
 # License: Creative Commons Attribution 4.0 International
-def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_weights_path, mutation_ind = '', worker_num = 1):
+def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_weights_path, mutation_ind = '', worker_num = 1, criterion='k_score'):
     print("Running Exhaustive Search for " + str(mutation))
-    # get the performance of the orginal model
-    origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
-    original_scores = load_scores_from_csv(origianl_scores_file_path)
-    original_accuracy_list = get_accuracy_list_from_scores(original_scores)
+    # # get the performance of the orginal model
+    # origianl_scores_file_path = os.path.join(full_path, 'original_scores.csv') # the scores of the original model
+    # original_scores = load_scores_from_csv(origianl_scores_file_path)
+    # original_accuracy_list = get_accuracy_list_from_scores(original_scores)
 
-    # get the path of the states
-    states_path = os.path.join(full_path, 'stats.csv')
+    # # get the path of the states
+    # states_path = os.path.join(full_path, 'stats.csv') # TODO deprecated
 
 
     name = my_params['name']
@@ -165,83 +168,104 @@ def execute_exhaustive_search(full_path, filename, mutation, my_params, mutant_w
         for optimiser in const.keras_optimisers:
             print("Changing into optimiser:" + str(optimiser))
             update_mutation_properties(mutation, "optimisation_function_udp", optimiser)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num))
-            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+            execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num, criterion=criterion)
 
-            if len(mutation_accuracy_list) > 0:
-                with open(states_path, 'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                    writer.writerow([str(optimiser), str(p_value), str(effect_size), str(is_sts)])
+            # TODO deprecated: calculate the states of the mutants
+            # mutation_accuracy_list = get_accuracy_list_from_scores()
+            # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+            # if len(mutation_accuracy_list) > 0:
+            #     with open(states_path, 'a') as f1:
+            #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+            #         writer.writerow([str(optimiser), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'change_activation_function' or name == 'add_activation_function':
         for activation in const.activation_functions:
             print("Changing into activation:" + str(activation))
             update_mutation_properties(mutation, "activation_function_udp", activation)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
-            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+            execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
 
-            if len(mutation_accuracy_list) > 0:
-                with open(states_path, 'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                    writer.writerow([str(activation), str(p_value), str(effect_size), str(is_sts)])
+            # TODO deprecated: calculate the states of the mutants
+            # mutation_accuracy_list = get_accuracy_list_from_scores()
+            # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+            # if len(mutation_accuracy_list) > 0:
+            #     with open(states_path, 'a') as f1:
+            #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+            #         writer.writerow([str(activation), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'change_loss_function':
         for loss in const.keras_losses:
             print("Changing into loss:" + str(loss))
             update_mutation_properties(mutation, "loss_function_udp", loss)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num))
-            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+            execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num, criterion=criterion)
 
-            if len(mutation_accuracy_list) > 0:
-                with open(states_path, 'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                    writer.writerow([str(loss), str(p_value), str(effect_size), str(is_sts)])
+            # TODO deprecated: calculate the states of the mutants
+            # mutation_accuracy_list = get_accuracy_list_from_scores()
+            # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+            # if len(mutation_accuracy_list) > 0:
+            #     with open(states_path, 'a') as f1:
+            #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+            #         writer.writerow([str(loss), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'change_dropout_rate':
         for dropout in const.dropout_values:
             print("Changing into dropout rate:" + str(dropout))
             update_mutation_properties(mutation, "rate", dropout)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
-            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
-            if len(mutation_accuracy_list) > 0:
-                with open(states_path, 'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                    writer.writerow([str(dropout), str(p_value), str(effect_size), str(is_sts)])
+            # TODO deprecated: calculate the states of the mutants
+            execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
+
+            # mutation_accuracy_list = get_accuracy_list_from_scores()
+            # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+            # if len(mutation_accuracy_list) > 0:
+            #     with open(states_path, 'a') as f1:
+            #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+            #         writer.writerow([str(dropout), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'change_batch_size':
         for batch_size in const.batch_sizes:
             print("Changing into batch size:" + str(batch_size))
             update_mutation_properties(mutation, "batch_size", batch_size)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num))    
-            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+            execute_mutant_as(full_path, filename, my_params, mutant_weights_path, worker_num=worker_num, criterion=criterion)
 
-            if len(mutation_accuracy_list) > 0:
-                with open(states_path, 'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                    writer.writerow([str(batch_size), str(p_value), str(effect_size), str(is_sts)])
+            # TODO deprecated: calculate the states of the mutants
+            # mutation_accuracy_list = get_accuracy_list_from_scores()    
+            # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+            # if len(mutation_accuracy_list) > 0:
+            #     with open(states_path, 'a') as f1:
+            #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+            #         writer.writerow([str(batch_size), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'change_weights_initialisation':
         for initialiser in const.keras_initialisers:
             print("Changing into initialisation:" + str(initialiser))
             update_mutation_properties(mutation, "weights_initialisation_udp", initialiser)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
-            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+            execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
 
-            if len(mutation_accuracy_list) > 0:
-                with open(states_path, 'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                    writer.writerow([str(initialiser), str(p_value), str(effect_size), str(is_sts)])
+            # TODO deprecated: calculate the states of the mutants
+            # mutation_accuracy_list = get_accuracy_list_from_scores(e)
+            # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+            # if len(mutation_accuracy_list) > 0:
+            #     with open(states_path, 'a') as f1:
+            #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+            #         writer.writerow([str(initialiser), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'add_weights_regularisation':
         for regularisation in const.keras_regularisers:
             print("Changing into regularisation:" + str(regularisation))
             update_mutation_properties(mutation, "weights_regularisation_udp", regularisation)
-            mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
-            is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+            execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
+            # TODO deprecated: calculate the states of the mutants
+            # mutation_accuracy_list = get_accuracy_list_from_scores()
+            # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
 
-            if len(mutation_accuracy_list) > 0:
-                with open(states_path, 'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                    writer.writerow([str(regularisation), str(p_value), str(effect_size), str(is_sts)])
+            # if len(mutation_accuracy_list) > 0:
+            #     with open(states_path, 'a') as f1:
+            #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+            #         writer.writerow([str(regularisation), str(p_value), str(effect_size), str(is_sts)])
     elif name == 'change_label' or 'delete_training_data' or 'unbalance_train_data' or 'make_output_classes_overlap' or 'change_learning_rate' or 'change_epochs' or 'add_noise' or 'change_earlystopping_patience':
-        execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind, worker_num=worker_num)
+        execute_mutants_exhaustive(mutation, full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
 
-def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, filename, my_params, mutant_weights_path, states_path, mutation_ind = '', worker_num = 1):
+def execute_mutants_exhaustive(mutation, full_path, filename, my_params, mutant_weights_path, mutation_ind = '', worker_num = 1, criterion='k_score'):
     """
     execute mutants which are originally binary search, now is exhaustive search
     """
@@ -257,13 +281,16 @@ def execute_mutants_exhaustive(mutation, original_accuracy_list, full_path, file
     for bs in values:
         print("Mutation: %s change into %d percent" % (mutation, bs))
         update_mutation_properties(mutation, "pct", bs)
-        mutation_accuracy_list = get_accuracy_list_from_scores(execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num))
-        is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+        execute_mutant_as(full_path, filename, my_params, mutant_weights_path, mutation_ind, worker_num=worker_num, criterion=criterion)
 
-        if len(mutation_accuracy_list) > 0:
-            with open(states_path, 'a') as f1:
-                writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
-                writer.writerow([str(bs), str(p_value), str(effect_size), str(is_sts)])
+        # TODO deprecated: calculate the states of the mutants
+        # mutation_accuracy_list = get_accuracy_list_from_scores()
+        # is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutation_accuracy_list)
+
+        # if len(mutation_accuracy_list) > 0:
+        #     with open(states_path, 'a') as f1:
+        #         writer = csv.writer(f1, delimiter=',', lineterminator='\n', )
+        #         writer.writerow([str(bs), str(p_value), str(effect_size), str(is_sts)])
 
 
 # TDOO deprecated
@@ -306,7 +333,7 @@ def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weigh
         scores = load_scores_from_csv(scores_file_path)
     return scores
 
-def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_weights_path, mutation_ind = '', worker_num = 1):
+def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_weights_path, mutation_ind = '', worker_num = 1, criterion='k_score'):
     """
     execute for a mutant based on the given parameters asynchoronously
     Args:
@@ -320,7 +347,10 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
     print("Excute asynchoronously.Mutant parameters: " + str(params_list))
     
     # results save path
-    scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.csv' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
+    if criterion == 'k_score':
+        scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.csv' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
+    elif criterion == 'd_score':
+        scores_file_path = os.path.join(mutation_path, 'mutant_score_%s%s%s.npy' % (mutant_filename.replace(".py", ""),  params_list, mutation_ind))
 
     # load the mutant
     transformed_path = os.path.join(mutation_path, mutant_filename).replace(os.path.sep, ".").replace(".py", "")
@@ -328,8 +358,13 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
     # train the mutant and save the results
     if not(os.path.isfile(scores_file_path)):
         manager = multiprocessing.Manager()
-        scores = [[0,0]] * mutation_params["runs_number"] # save the scores of each mutant
-        scores = manager.list(scores)  # Use a managed list to share data between processes
+
+        if criterion == 'k_score':
+            scores = [[0,0]] * mutation_params["runs_number"] # save the scores of each mutant
+            scores = manager.list(scores)  # Use a managed list to share data between processes
+        elif criterion == 'd_score':
+            scores = [[]] * mutation_params["runs_number"]
+            scores = manager.list(scores)  # Use a managed list to share data between processes
 
         # execute the mutants asynchoronously
         with concurrent.futures.ProcessPoolExecutor(max_workers=worker_num) as executor:
@@ -337,12 +372,21 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
             concurrent.futures.wait(futures)
         
         # check if the scores are not empty
-        if scores[0] != [0,0]:
-            # save the scores
-            save_scores_csv(scores, scores_file_path)
+        if criterion == 'k_score':
+            if scores[0] != [0,0]:
+                # save the scores
+                save_scores_csv(scores, scores_file_path)
+        elif criterion == 'd_score':
+            if scores[0] != []:
+                # save the scores
+                save_scores_npy_d_score(scores, scores_file_path)
     else:
+        # TODO deprecated
         print("reading scores from file")
-        scores = load_scores_from_csv(scores_file_path)
+        if criterion == 'k_score':
+            scores = load_scores_from_csv(scores_file_path)
+        elif criterion == 'd_score':
+            scores = load_scores_from_csv_d_score(scores_file_path, mutation_params["runs_number"])
         
     return scores
 
