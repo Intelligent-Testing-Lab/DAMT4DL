@@ -1,0 +1,9 @@
+subject_name: movie
+original_path: test_models/movie/Deepcrime/movie_recomm_mod.py
+mutations: ["change_label", "delete_training_data", "unbalance_train_data", "make_output_classes_overlap",
+                      "change_batch_size", "change_learning_rate", "change_epochs", "disable_batching",
+                      "change_loss_function", "change_optimisation_function", "remove_validation_set"]
+# mutations: ["change_label"]
+mode: test
+criterion: d_score #["k_score", "d_score", "d_score_train"]
+algorithm: d_score_original_base #["k_score", "d_score_original_base", "d_score_train_training_base"]
