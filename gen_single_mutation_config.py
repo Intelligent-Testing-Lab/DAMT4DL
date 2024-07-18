@@ -32,14 +32,14 @@ def gen_single_mutation_config(original_path, task, mode, criterion):
 
 
 
-# tasks = ['audio', 'lenet', 'mnist', 'movie', 'udacity']
-tasks = ['audio']
+tasks = ['audio', 'lenet', 'mnist', 'movie', 'udacity']
 modes = ['test', 'train', 'test_weak']
-# criterions = ['k_score', 'd_score']
-criterions = ['k-score']
+criterions = ['k_score', 'd_score']
 
 for task in tasks:
     for mode in modes:
+        if mode == 'test_weak' and task == 'movie':
+            continue
         for criterion in criterions:
             original_path = f'./config_file/{task}/{criterion}/{task}_{mode}.yaml'
             gen_single_mutation_config(original_path, task, mode, criterion)
