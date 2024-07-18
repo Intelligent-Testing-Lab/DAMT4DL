@@ -1,6 +1,0 @@
-subject_name: mnist
-original_path: test_models/mnist/Deepcrime/mnist_conv.py
-mutations: ["change_label"]
-mode: test
-workers_num: 1
-criterion: k_score #["k_score", "d_score", "d_score_train"]
