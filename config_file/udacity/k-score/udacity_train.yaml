@@ -7,3 +7,5 @@ mutations: ["change_label", "delete_training_data", "unbalance_train_data", "mak
                       "change_optimisation_function", "remove_validation_set"]
 mode: train
 criterion: k_score #["k_score", "d_score", "d_score_train"]
+workers_num: 10
+save_path: /mnt/parscratch/users/act23zz

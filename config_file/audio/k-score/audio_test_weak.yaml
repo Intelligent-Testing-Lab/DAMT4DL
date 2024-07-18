@@ -5,5 +5,7 @@ mutations: ["change_label", "delete_training_data", "unbalance_train_data", "mak
                       "remove_activation_function", "add_activation_function","add_weights_regularisation",
                       "change_weights_initialisation", "remove_bias", "change_loss_function",
                       "change_optimisation_function", "remove_validation_set", "change_earlystopping_patience"]
+workers_num: 10
 mode: test_weak # ["test", "train", "test_weak"]
 criterion: k_score #["k_score", "d_score", "d_score_train"]
+save_path: /mnt/parscratch/users/act23zz
