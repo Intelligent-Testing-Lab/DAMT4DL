@@ -218,11 +218,11 @@ keras_initialisers = [
     "orthogonal",
     "identity",
     "lecun_uniform",
-    # "glorot_normal",
-    # "glorot_uniform",
-    # "he_normal",
-    # "lecun_normal",
-    # "he_uniform"
+    "glorot_normal",
+    "glorot_uniform",
+    "he_normal",
+    "lecun_normal",
+    "he_uniform"
 ]
 
 keras_vs_initialisers_config = [
@@ -252,8 +252,8 @@ keras_losses = [
     #"categorical_crossentropy",
     "sparse_categorical_crossentropy",
     "binary_crossentropy",
-    # "kullback_leibler_divergence",
-    # "poisson",
+    "kullback_leibler_divergence",
+    "poisson",
     #"cosine_proximity"
 ]
 
@@ -327,7 +327,7 @@ bs_values = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95]
 # Learning rate values
 ###
 lr_values = [
-  0.000095, 0.00008944, 0.00008389, 0.00007833, 0.00007278, 0.00006722, 0.00006167, 0.00005611, 0.00005056, 0.00005
+  0.000095, 0.000085, 0.000075, 0.000065, 0.000055, 0.000045, 0.000035, 0.000025, 0.000015, 0.00001
 ]
 
 
@@ -335,5 +335,5 @@ lr_values = [
 # Epochs values
 ### 
 epochs_values = [
-    1, 6, 11, 16, 21, 26, 31, 36, 41, 45
+    1, 5, 10, 15, 20, 25, 30, 35, 40, 45
 ]
