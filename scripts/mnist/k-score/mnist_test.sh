@@ -1,11 +1,24 @@
 #!/bin/bash
 
-# Define the list of mutations
-mutations=("change_epochs","change_label", "delete_training_data", "unbalance_train_data", "add_noise",
-                        "make_output_classes_overlap", "change_batch_size", "change_learning_rate",
-                        "remove_activation_function",
-                        "add_weights_regularisation", "change_dropout_rate", "change_weights_initialisation",
-                        "remove_bias", "change_loss_function", "change_optimisation_function", "remove_validation_set")
+# Define the mutations array without commas
+mutations=(
+    "change_epochs"
+    "change_label"
+    "delete_training_data"
+    "unbalance_train_data"
+    "add_noise"
+    "make_output_classes_overlap"
+    "change_batch_size"
+    "change_learning_rate"
+    "remove_activation_function"
+    "add_weights_regularisation"
+    "change_dropout_rate"
+    "change_weights_initialisation"
+    "remove_bias"
+    "change_loss_function"
+    "change_optimisation_function"
+    "remove_validation_set"
+)
 
 # Iterate over the list of mutations
 for mutation in "${mutations[@]}"
@@ -17,6 +30,7 @@ do
 #SBATCH --output=./Output/mnist/k-score/test/${mutation}_%j.out
 #SBATCH --error=./Output/mnist/k-score/test/${mutation}_%j.err  # Standard error log
 #SBATCH --job-name=mn_k_te_${mutation}
+#SBATCH --time=4-00:00:00              # Run time (D-HH:MM:SS)
 
 module load Anaconda3/2022.05
 
