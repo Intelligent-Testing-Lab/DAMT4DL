@@ -82,7 +82,7 @@ activation_functions = [
     "sigmoid",
     "hard_sigmoid",
     "exponential",
-    # "linear" # TODO more than 10
+    "linear"
 ]
 
 #Mapping
@@ -223,9 +223,9 @@ keras_initialisers = [
     "lecun_uniform",
     "glorot_normal",
     "glorot_uniform",
-    # "he_normal",
-    # "lecun_normal",
-    # "he_uniform"
+    "he_normal",
+    "lecun_normal",
+    "he_uniform"
 ]
 
 keras_vs_initialisers_config = [
@@ -254,9 +254,9 @@ keras_losses = [
     "huber_loss",
     "categorical_crossentropy",
     #"sparse_categorical_crossentropy",
-    # "binary_crossentropy",
-    # "kullback_leibler_divergence",
-    # "poisson", # TODO more than 10
+    "binary_crossentropy",
+    "kullback_leibler_divergence",
+    "poisson",
     #"cosine_proximity"
 ]
 
@@ -330,7 +330,7 @@ epochs_values = [
 # Learning rate values
 ###
 lr_values = [
-   0.001, 0.106, 0.212, 0.317, 0.423, 0.528, 0.634, 0.739, 0.845, 0.950
+   0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 0.9
 ]
 
 ###
