@@ -255,8 +255,8 @@ keras_losses = [
     "categorical_crossentropy",
     #"sparse_categorical_crossentropy",
     #"binary_crossentropy",
-    # "kullback_leibler_divergence",
-    # "poisson", # TODO more than 10 
+    "kullback_leibler_divergence",
+    "poisson", # TODO more than 10 
     #"cosine_proximity"
 ]
 
@@ -331,7 +331,7 @@ lr_values = [
 # Epochs values
 ### 
 epochs_values = [
-    1, 2, 3, 4, 5
+    1, 2, 3, 4
 ]
 
 ###

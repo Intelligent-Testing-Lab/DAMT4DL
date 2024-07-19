@@ -15,6 +15,7 @@ do
 #SBATCH --output=./Output/movie/k-score/test/${mutation}_%j.out
 #SBATCH --error=./Output/movie/k-score/test/${mutation}_%j.err  # Standard error log
 #SBATCH --job-name=mv_k_te_${mutation}
+#SBATCH --time=4-00:00:00              # Run time (D-HH:MM:SS)
 
 module load Anaconda3/2022.05
 
