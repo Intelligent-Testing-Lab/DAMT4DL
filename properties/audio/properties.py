@@ -19,7 +19,7 @@ statistical_test = "GLM"
 MS = "DC_MS"
 
 model_properties = {
-    "epochs": 50,
+    "epochs": 20,
     "batch_size": 128,
     "learning_rate": 0.001,
     "x_train_len": 5401,
