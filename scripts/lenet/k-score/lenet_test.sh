@@ -1,11 +1,25 @@
 #!/bin/bash
 
 # Define the list of mutations
-mutations=("remove_validation_set", "change_optimisation_function", "change_loss_function",
-                        "remove_activation_function", "remove_bias", "add_weights_regularisation",
-                        "add_activation_function", "change_activation_function", "change_weights_initialisation",
-                        "change_epochs", "change_batch_size", "change_learning_rate", "delete_training_data",
-                        "add_noise", "unbalance_train_data", "make_output_classes_overlap", "change_label")
+mutations=(
+    "remove_validation_set"
+    "change_optimisation_function"
+    "change_loss_function"
+    "remove_activation_function"
+    "remove_bias"
+    "add_weights_regularisation"
+    "add_activation_function"
+    "change_activation_function"
+    "change_weights_initialisation"
+    "change_epochs"
+    "change_batch_size"
+    "change_learning_rate"
+    "delete_training_data"
+    "add_noise"
+    "unbalance_train_data"
+    "make_output_classes_overlap"
+    # "change_label"
+)
 
 # Iterate over the list of mutations
 for mutation in "${mutations[@]}"
@@ -17,6 +31,7 @@ do
 #SBATCH --output=./Output/lenet/k-score/test/${mutation}_%j.out
 #SBATCH --error=./Output/lenet/k-score/test/${mutation}_%j.err  # Standard error log
 #SBATCH --job-name=le_k_te_${mutation}
+#SBATCH --time=4-00:00:00              # Run time (D-HH:MM:SS)
 
 module load Anaconda3/2022.05
 

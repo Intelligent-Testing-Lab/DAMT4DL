@@ -232,8 +232,8 @@ keras_initialisers = [
     "glorot_normal",
     "glorot_uniform",
     "he_normal",
-    # "lecun_normal",
-    # "he_uniform"
+    "lecun_normal",
+    "he_uniform"
 ]
 
 keras_vs_initialisers_config = [
@@ -297,7 +297,7 @@ bs_values = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95]
 ###
 # Epochs values
 ### 
-epochs_values = [1, 6, 11, 16, 21, 26, 31, 36, 41, 45]
+epochs_values = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45]
 
 ###
 # Learning rate values
