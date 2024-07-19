@@ -221,9 +221,9 @@ keras_initialisers = [
     "lecun_uniform",
     "glorot_normal",
     "glorot_uniform",
-    # "he_normal",
-    # "lecun_normal",
-    # "he_uniform" # TODO more than 10
+    "he_normal",
+    "lecun_normal",
+    "he_uniform"
 ]
 
 keras_vs_initialisers_config = [
@@ -252,9 +252,9 @@ keras_losses = [
     "huber_loss",
     "categorical_crossentropy",
     #"sparse_categorical_crossentropy",
-    # "binary_crossentropy",
-    # "kullback_leibler_divergence",
-    # "poisson",
+    "binary_crossentropy",
+    "kullback_leibler_divergence",
+    "poisson",
     #"cosine_proximity"
 ]
 
@@ -333,7 +333,7 @@ lr_values = [
 # Epochs values
 ### 
 epochs_values = [
-    1, 3, 5, 7, 9, 10, 11, 12, 13, 14
+    1, 3, 5, 7, 9, 11, 13, 15, 17, 19
 ]
 
 ####
