@@ -34,7 +34,7 @@ def gen_single_mutation_config(original_path, task, mode, criterion):
 
 tasks = ['audio', 'lenet', 'mnist', 'movie', 'udacity']
 modes = ['test', 'train', 'test_weak']
-criterions = ['k_score', 'd_score']
+criterions = ['k-score', 'd-score']
 
 for task in tasks:
     for mode in modes:

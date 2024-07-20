@@ -12,9 +12,9 @@ do
   sbatch_script="#!/bin/bash
 #SBATCH --nodes=1  # Specify a number of nodes
 #SBATCH --mem=30G  # Request 30 gigabytes of real memory (mem)
-#SBATCH --output=./Output/movie/d-score/test/${mutation}_%j.out
-#SBATCH --error=./Output/movie/d-score/test/${mutation}_%j.err  # Standard error log
-#SBATCH --job-name=mv_d_te_${mutation}
+#SBATCH --output=./Output/movie/d-score/train/${mutation}_%j.out
+#SBATCH --error=./Output/movie/d-score/train/${mutation}_%j.err  # Standard error log
+#SBATCH --job-name=mv_d_tr_${mutation}
 #SBATCH --time=4-00:00:00              # Run time (D-HH:MM:SS)
 
 module load Anaconda3/2022.05
@@ -22,7 +22,7 @@ module load Anaconda3/2022.05
 source activate deepcrime # using HPC
 
 export PYTHONPATH=$(pwd)
-python ./cmd/main.py --config ./config_file/movie/d-score/test/${mutation}.yaml --properties ./properties/movie/properties.py --constants ./properties/movie/constants.py
+python ./cmd/main.py --config ./config_file/movie/d-score/train/${mutation}.yaml --properties ./properties/movie/properties.py --constants ./properties/movie/constants.py
 "
 
   # Save the sbatch script to a temporary file
