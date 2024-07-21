@@ -2,7 +2,7 @@
 
 # Define the list of mutations
 mutations=(
-    "change_label"
+    # "change_label"
     "delete_training_data"
     "unbalance_train_data"
     "make_output_classes_overlap"
@@ -30,6 +30,7 @@ do
 #SBATCH --error=./Output/udacity/k-score/test/${mutation}_%j.err  # Standard error log
 #SBATCH --job-name=ud_k_te_${mutation}
 #SBATCH --time=4-00:00:00              # Run time (D-HH:MM:SS)
+#SBATCH --ntasks=15
 
 module load Anaconda3/2022.05
 

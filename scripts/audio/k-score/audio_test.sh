@@ -17,7 +17,7 @@ mutations=(
     "change_loss_function"
     "change_optimisation_function"
     "remove_validation_set"
-    # "change_earlystopping_patience"
+    "change_earlystopping_patience"
 )
 
 # Iterate over the list of mutations
@@ -31,6 +31,7 @@ do
 #SBATCH --error=./Output/audio/k-score/test/${mutation}_%j.err  # Standard error log
 #SBATCH --job-name=au_k_te_${mutation}
 #SBATCH --time=4-00:00:00              # Run time (D-HH:MM:SS)
+#SBATCH --ntasks=15
 
 module load Anaconda3/2022.05
 

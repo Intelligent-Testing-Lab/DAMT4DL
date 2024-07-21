@@ -16,6 +16,7 @@ do
 #SBATCH --error=./Output/movie/d-score/test/${mutation}_%j.err  # Standard error log
 #SBATCH --job-name=mv_d_te_${mutation}
 #SBATCH --time=4-00:00:00              # Run time (D-HH:MM:SS)
+#SBATCH --ntasks=15
 
 module load Anaconda3/2022.05
 

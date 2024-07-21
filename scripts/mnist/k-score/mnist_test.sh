@@ -31,6 +31,7 @@ do
 #SBATCH --error=./Output/mnist/k-score/test/${mutation}_%j.err  # Standard error log
 #SBATCH --job-name=mn_k_te_${mutation}
 #SBATCH --time=4-00:00:00              # Run time (D-HH:MM:SS)
+#SBATCH --ntasks=15
 
 module load Anaconda3/2022.05
 
