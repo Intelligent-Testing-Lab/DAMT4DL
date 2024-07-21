@@ -10,4 +10,4 @@ module load Anaconda3/2022.05
 source activate deepcrime
 
 export PYTHONPATH=$(pwd)
-python ./cmd/main.py --config ./config_file/mnist/k-score/mnist_test.yaml --properties ./properties/mnist/properties_test.py --constants ./properties/mnist/constants_test.py
+python ./cmd/main.py --config ./config_file/mnist/k-score/mnist_test.yaml --properties ./properties/mnist/properties.py --constants ./properties/mnist/constants.py
