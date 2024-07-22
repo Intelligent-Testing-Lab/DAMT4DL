@@ -2,7 +2,7 @@
 
 # Define the list of mutations
 mutations=(
-    # "change_label"
+    "change_label"
     "delete_training_data"
     "unbalance_train_data"
     "make_output_classes_overlap"
