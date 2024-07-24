@@ -60,11 +60,9 @@ python ./analyse/stats_analysis.py --config ./config_file/${task}/${criterion}/$
 
 
 # Constants Definitions
-# tasks=("mnist" "movie" "audio" "udacity"  "lenet") # The tasks to be analysed
-tasks=('movie')
+tasks=("mnist" "movie" "audio" "udacity"  "lenet") # The tasks to be analysed
 criterions=("k-score" "d-score") # The criterions to be analysed
-# modes=("test" "train" "test_weak") # The modes to be analysed
-modes=("test")
+modes=("test" "train" "test_weak") # The modes to be analysed
 
 for task in "${tasks[@]}"
 do
