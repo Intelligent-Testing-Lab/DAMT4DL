@@ -301,7 +301,7 @@ remove_weights_regularisation = {
 }
 
 change_earlystopping_patience = {
-    "name": "change_patience",
+    "name": "change_earlystopping_patience",
     "runs_number": 10,
     "patience_udp": None,
     "annotation_params": [],
