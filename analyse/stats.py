@@ -12,9 +12,8 @@ import statsmodels.api as sm
 
 from patsy import dmatrices
 from scipy.stats import wilcoxon
-from utils import properties
 
-def is_diff_sts(orig_accuracy_list, accuracy_list, threshold = 0.05):
+def is_diff_sts(orig_accuracy_list, accuracy_list, model_type = "classification", statistical_test = "GLM", threshold = 0.05):
     """
     Check if the difference between the original model and the mutant is statistically significant.
 
@@ -24,16 +23,16 @@ def is_diff_sts(orig_accuracy_list, accuracy_list, threshold = 0.05):
     - effect_size: float: the Cohen's d effect size
     """
     # TODO: what is WLX and GLM
-    if properties.statistical_test == "WLX":
+    if statistical_test == "WLX":
         p_value = p_value_wilcoxon(orig_accuracy_list, accuracy_list)
-    elif properties.statistical_test == "GLM":
+    elif statistical_test == "GLM":
         p_value = p_value_glm(orig_accuracy_list, accuracy_list)
     else:
         raise Exception("The selected statistical test is invalid/not implemented.")
 
     effect_size = cohen_d(orig_accuracy_list, accuracy_list)
 
-    if properties.model_type == 'regression':
+    if model_type == 'regression':
         is_sts = ((p_value < threshold) and effect_size <= -0.5)
     else:
         is_sts = ((p_value < threshold) and effect_size >= 0.5)

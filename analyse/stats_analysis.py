@@ -6,7 +6,7 @@ from analyse.analyse_utils import *
 from analyse.stats import *
 
 
-def analyze_stats(conf):
+def analyze_stats(conf, model_type = "classification", statistical_test = "GLM", threshold = 0.05):
      for mutation in conf.mutations:
         print("\n\nAnalyzing the results for mutation operator: %s" % mutation)
 
@@ -19,14 +19,14 @@ def analyze_stats(conf):
         if not os.path.exists(states_path):
             # analyze satistics based on the criterion
             if conf.criterion == 'k_score':
-                analyze_results_k_scores(full_path, states_path)
+                analyze_results_k_scores(full_path=full_path, states_path=states_path, model_type=model_type, statistical_test=statistical_test, threshold=threshold)
             elif conf.criterion == 'd_score':
-                analyze_results_d_scores(full_path, states_path)
+                analyze_results_d_scores(full_path=full_path, states_path=states_path, model_type=model_type, statistical_test=statistical_test, threshold=threshold)
         else:
             print("The stats file already exists: %s for mutation operator: %s" % (states_path, mutation))
             
 
-def analyze_results_k_scores(full_path, states_path):
+def analyze_results_k_scores(full_path, states_path, model_type = "classification", statistical_test = "GLM", threshold = 0.05):
     print("Analyzing the results for k_score")
 
     original_scores_path = os.path.join(full_path, 'original_scores.csv') # save the scores of the original model
@@ -47,7 +47,7 @@ def analyze_results_k_scores(full_path, states_path):
                 mutant_accuracy_list = get_accuracy_list_from_scores(mutant_scores)
 
                 # statistic anaylyse for the performance
-                is_sts, p_value, effect_size = is_diff_sts(original_accuracy_list, mutant_accuracy_list)
+                is_sts, p_value, effect_size = is_diff_sts(orig_accuracy_list=original_accuracy_list, accuracy_list=mutant_accuracy_list, model_type=model_type, statistical_test=statistical_test, threshold=threshold)
 
                 # save the stats
                 save_stats_k_score(states_path, filename.replace(".csv", ""), p_value, effect_size, is_sts)
@@ -71,7 +71,7 @@ def handle_d_score(scores):
     return d_scores
   
 
-def is_diff_sts_d_score(original_scores, mutant_scores):
+def is_diff_sts_d_score(original_scores, mutant_scores, model_type = "classification", statistical_test = "GLM", threshold = 0.05):
     d_vec = []
     runs_num = len(original_scores)
     test_cases_num = len(original_scores[0])
@@ -79,12 +79,12 @@ def is_diff_sts_d_score(original_scores, mutant_scores):
     for test_case_id in range(test_cases_num):
         original_accuracy_list = get_accuracy_list_from_scores_d_score(original_scores, test_case_id, runs_num)
         mutant_accuracy_list = get_accuracy_list_from_scores_d_score(mutant_scores, test_case_id, runs_num)
-        is_sts, _, _ = is_diff_sts(original_accuracy_list, mutant_accuracy_list)
+        is_sts, _, _ = is_diff_sts(orig_accuracy_list=original_accuracy_list, accuracy_list=mutant_accuracy_list, model_type=model_type, statistical_test=statistical_test, threshold=threshold)
         d_vec.append(1 if is_sts else 0)
     return d_vec
 
 
-def analyze_results_d_scores(full_path, states_path):
+def analyze_results_d_scores(full_path, states_path, model_type = "classification", statistical_test = "GLM", threshold = 0.05):
     print("Analyzing the results for d_score")
     original_scores_path = os.path.join(full_path, 'original_scores.npy') # save the scores of the original model
     print("original_scores_path: %s" % original_scores_path)
@@ -106,7 +106,7 @@ def analyze_results_d_scores(full_path, states_path):
                 mutant_d_scores = handle_d_score(mutant_scores)
 
                 # statistic anaylyse for the performance
-                d_vector = is_diff_sts_d_score(original_d_scores, mutant_d_scores)
+                d_vector = is_diff_sts_d_score(original_scores=original_d_scores, mutant_scores=mutant_d_scores, model_type=model_type, statistical_test=statistical_test, threshold=threshold)
 
                 # save the stats
                 save_stats_d_score(states_path, filename.replace(".npy", ""), d_vector)
@@ -117,6 +117,8 @@ def run():
     # Parse the command line arguments
     parser = argparse.ArgumentParser(description='Run the experiment')
     parser.add_argument('--config', type=str, help='Path to the configuration file')
+    parser.add_argument('--model_type', type=str, help='Type of the model: classification or regression')
+    parser.add_argument('--statistical_test', type=str, help='Statistical test: WLX or GLM')
 
 
     # Parse the arguments
@@ -125,12 +127,12 @@ def run():
     # Set up the experiment parameters
     conf = config.Config.from_yaml(args.config)
 
-    print("=========Read Properties successfully: subject: %s, mode: %s, mutations: %s, criterion: %s, workers_num: %s=========\n\n" % (conf.subject_name, conf.mode, conf.mutations, conf.criterion, conf.workers_num))
+    print("=========Read Properties successfully: subject: %s, mode: %s, mutations: %s, criterion: %s model_type: %s, statistical_test: %s=========\n\n" % (conf.subject_name, conf.mode, conf.mutations, conf.criterion, args.model_type, args.statistical_test))
 
 
     # Statistical analysis of the results
     print("===========Statistical Analyzing the results===========\n\n")
-    analyze_stats(conf)
+    analyze_stats(conf, model_type=args.model_type, statistical_test=args.statistical_test)
 
     print("===========Statistical Analysis completed===========\n\n")
 
