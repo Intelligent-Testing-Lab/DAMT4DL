@@ -58,7 +58,7 @@ stats_analysis() {
 
 
 # Constants Definitions
-tasks=("mnist" "movie" "audio" "udacity"  "lenet") # The tasks to be analysed # TODO recover
+tasks=("mnist" "movie" "audio" "udacity"  "lenet") # The tasks to be analysed
 criterions=("k-score" "d-score") # The criterions to be analysed
 modes=("test" "train" "test_weak") # The modes to be analysed
 
