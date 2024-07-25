@@ -269,6 +269,17 @@ def get_all_data():
     train_audio_paths = train_audio_paths[:-num_test_samples]
     train_labels = train_labels[:-num_test_samples]
 
+    # keep the original train dataset for the evaluation
+    original_train_ds = paths_and_labels_to_dataset(train_audio_paths, train_labels)
+    original_train_ds = original_train_ds.shuffle(buffer_size=BATCH_SIZE * 8, seed=SHUFFLE_SEED).batch(
+        BATCH_SIZE
+    )
+    original_train_ds = original_train_ds.map(
+        lambda x, y: (audio_to_fft(x), y), num_parallel_calls=tf.data.experimental.AUTOTUNE
+    )
+    original_train_ds = original_train_ds.prefetch(tf.data.experimental.AUTOTUNE)
+
+
     train_audio_paths: 'x_train'
     train_labels: 'y_train'
 
@@ -307,7 +318,7 @@ def get_all_data():
     )
     test_ds = test_ds.prefetch(tf.data.experimental.AUTOTUNE)
 
-    return train_ds, test_ds, valid_ds, class_names
+    return train_ds, test_ds, valid_ds, class_names, original_train_ds
 
 def evaluate_model(model, dataset):
     """
@@ -323,7 +334,7 @@ def main(model_location):
     BATCH_SIZE = 128
     EPOCHS = 20
 
-    train_ds, test_ds, valid_ds, class_names = get_all_data()
+    train_ds, test_ds, valid_ds, class_names, original_train_ds = get_all_data()
     if not os.path.exists(model_location):
         print("Training the model from scratch")
         model = build_model((SAMPLING_RATE // 2, 1), len(class_names))
@@ -351,14 +362,14 @@ def main(model_location):
 
         model.save(model_location)
         # score = model.evaluate(train_ds, verbose=0)
-        d_scores = model.evaluate(train_ds, verbose=0)
+        d_scores = model.evaluate(original_train_ds, verbose=0)
 
     else:
         print("The model already exists. Loading the model from the file")
         model = tf.keras.models.load_model(model_location, compile=False)
         model.compile(optimizer='Adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         # score = model.evaluate(train_ds, verbose=0)
-        d_scores = evaluate_model(model, train_ds)
+        d_scores = evaluate_model(model, original_train_ds)
 
     K.clear_session() # Clear the session to avoid memory leaks
 

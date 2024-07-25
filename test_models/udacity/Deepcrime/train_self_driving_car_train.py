@@ -129,7 +129,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
     print(args.learning_rate)
     model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate))
 
-    train_generator, validation_generator, _ = get_generators(args, x_train, x_valid, y_train, y_valid)
+    train_generator, validation_generator, original_train_generator = get_generators(args, x_train, x_valid, y_train, y_valid)
 
     history = model.fit_generator(train_generator,
                                   validation_data=validation_generator,
@@ -139,7 +139,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
     # save the last model anyway (might not be the best)
     model.save(model_loc)
 
-    score = model.evaluate_generator(train_generator)
+    score = model.evaluate_generator(original_train_generator)
     return [score, score]
 
 
