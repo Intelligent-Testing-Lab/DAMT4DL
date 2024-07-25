@@ -107,13 +107,15 @@ def get_generators(args, x_train, x_valid, y_train, y_valid):
     x_train, y_train = shuffle(x_train, y_train, random_state=0)
     x_valid, y_valid = shuffle(x_valid, y_valid, random_state=0)
 
+    original_train_generator = Generator(x_train, y_train, False, args) # keep all the original train data for testing
+
     x_train: 'x_train'
     y_train: 'y_train'
 
     train_generator = Generator(x_train, y_train, True, args)
     validation_generator = Generator(x_valid, y_valid, False, args)
 
-    return train_generator, validation_generator
+    return train_generator, validation_generator, original_train_generator
 
 
 def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
@@ -127,7 +129,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
     print(args.learning_rate)
     model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate))
 
-    train_generator, validation_generator = get_generators(args, x_train, x_valid, y_train, y_valid)
+    train_generator, validation_generator, _ = get_generators(args, x_train, x_valid, y_train, y_valid)
 
     history = model.fit_generator(train_generator,
                                   validation_data=validation_generator,
@@ -172,7 +174,7 @@ def main(model_loc):
     print('-' * 30)
 
     data = load_data(args)
-    train_generator, validation_generator = get_generators(args, *data)
+    train_generator, validation_generator, original_train_generator = get_generators(args, *data)
 
     if not os.path.exists(model_loc):
         print('model does not exist')
@@ -190,7 +192,7 @@ def main(model_loc):
     else:
         print('model exists')
         model = tensorflow.keras.models.load_model(model_loc)
-        metric_value = model.evaluate_generator(train_generator)
+        metric_value = model.evaluate_generator(original_train_generator)
         score = [metric_value, metric_value]
     
     K.clear_session() # Clear the session to avoid memory leaks
