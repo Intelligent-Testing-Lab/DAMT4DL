@@ -46,13 +46,12 @@ def execute_original_model(path, config):
             save_scores_npy_d_score(list(scores), scores_file_path)
         print(f"The scores of the original model have been saved to the file: {scores_file_path}")
     else:
-        # TODO depreacted
         print("Loading the scores from the file")
         if config.criterion == 'k_score':
             scores = load_scores_from_csv(scores_file_path)
             print("The scores of the original model: %s" % scores)
         elif config.criterion == 'd_score':
-            scores = load_scores_from_csv_d_score(scores_file_path, const.runs_number_default)   
+            scores = load_scores_from_npy_d_scores(scores_file_path)
             print("The length of scores of the original model: %s" % len(scores))
 
     print("Execution of original model completed\n\n")

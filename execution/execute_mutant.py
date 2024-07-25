@@ -380,16 +380,7 @@ def execute_mutant_as(mutation_path, mutant_filename, mutation_params, mutant_we
             if scores[0] != []:
                 # save the scores
                 save_scores_npy_d_score(scores, scores_file_path)
-    else:
-        # TODO deprecated
-        print("reading scores from file")
-        if criterion == 'k_score':
-            scores = load_scores_from_csv(scores_file_path)
-        elif criterion == 'd_score':
-            scores = load_scores_from_csv_d_score(scores_file_path, mutation_params["runs_number"])
-        
-    return scores
-
+    
 def train_mutant(transformed_path, scores, mutant_weights_path, mutant_filename, params_list, mutation_ind, i):
     """
     train the mutant and save the results
