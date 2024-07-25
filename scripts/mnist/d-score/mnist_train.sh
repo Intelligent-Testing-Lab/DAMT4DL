@@ -13,7 +13,7 @@ mutations=(
     "remove_activation_function"
     "add_weights_regularisation"
     "change_dropout_rate"
-    # "change_weights_initialisation"
+    "change_weights_initialisation"
     "remove_bias"
     "change_loss_function"
     "change_optimisation_function"

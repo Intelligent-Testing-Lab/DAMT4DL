@@ -62,6 +62,7 @@ def load_scores_from_csv(file_path):
 
     return scores
 
+# TODO deprecated
 def load_scores_from_csv_d_score(file_path, runs_number):
     """
     Load scores from csv file for d_score
@@ -75,6 +76,12 @@ def load_scores_from_csv_d_score(file_path, runs_number):
 
     return scores
 
+def load_scores_from_npy_d_scores(file_path):
+    """ load scores from npy file for d_score
+    """
+    row_array = np.load(file_path)
+    
+    return row_array.tolist()
 
 def get_accuracy_list_from_scores(scores):
     """

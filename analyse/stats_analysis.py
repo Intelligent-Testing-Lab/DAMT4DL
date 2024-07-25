@@ -76,6 +76,10 @@ def is_diff_sts_d_score(original_scores, mutant_scores, model_type = "classifica
     runs_num = len(original_scores)
     test_cases_num = len(original_scores[0])
 
+    mutant_test_cases_num = len(mutant_scores[0])
+    if test_cases_num != mutant_test_cases_num:
+        raise ValueError("The number of test cases for the original model and the mutant model are different")
+
     for test_case_id in range(test_cases_num):
         original_accuracy_list = get_accuracy_list_from_scores_d_score(original_scores, test_case_id, runs_num)
         mutant_accuracy_list = get_accuracy_list_from_scores_d_score(mutant_scores, test_case_id, runs_num)

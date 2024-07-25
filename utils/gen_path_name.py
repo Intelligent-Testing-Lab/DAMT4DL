@@ -26,3 +26,12 @@ def gen_mutant_weights_path(path, config, mutation):
     if not os.path.exists(path):
         os.makedirs(path)
     return path
+
+def gen_ms_path(path, subject_name, criterion):
+    """
+    Generate the path to save the mutation scores for each subject
+    """
+    path = os.path.join(path, subject_name, criterion)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path

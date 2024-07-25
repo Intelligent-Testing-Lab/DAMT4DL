@@ -1,6 +1,10 @@
 import csv
 import numpy as np
 import ast
+import sys
+
+# Increase the CSV field size limit
+csv.field_size_limit(sys.maxsize)
 
 
 
