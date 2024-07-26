@@ -116,17 +116,6 @@ def build_model(input_shape, num_classes):
     return keras.models.Model(inputs=inputs, outputs=outputs)
 
 
-
-def evaluate_model(model, dataset):
-    """
-    Evaluate the model on single data of whole dataset
-    """
-    scores = []
-    for i, (audio, label) in enumerate(dataset):
-        single_score = model.evaluate(audio, label, verbose=0)
-        scores.append([i, single_score[0], single_score[1]]) 
-    return scores
-
 def get_all_data():
     print(os.getcwd())
     DATASET_ROOT = os.path.join('Datasets', 'Audio', '16000_pcm_speeches')
@@ -320,6 +309,16 @@ def get_all_data():
 
     return train_ds, test_ds, valid_ds, class_names
 
+def evaluate_model(model, dataset):
+    """
+    Evaluate the model on single data of whole dataset
+    """
+    scores = []
+    for i, (audio, label) in enumerate(dataset):
+        single_score = model.evaluate(audio, label, verbose=0)
+        scores.append([i, single_score[0], single_score[1]]) 
+    return scores
+
 def main(model_location):
     BATCH_SIZE = 128
     EPOCHS = 20
@@ -362,13 +361,13 @@ def main(model_location):
 
         model.save(model_location)
         # score = model.evaluate(weak_test_ds, verbose=0)
-        d_scores = model.evaluate(weak_test_ds, verbose=0)
+        d_scores = evaluate_model(model, weak_test_ds)
     else:
         print("The model already exists. Loading the model from the file")
         model = tf.keras.models.load_model(model_location, compile=False)
         model.compile(optimizer='Adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         # score = model.evaluate(weak_test_ds, verbose=0)
-        d_scores = model.evaluate(weak_test_ds, verbose=0)
+        d_scores = evaluate_model(model, weak_test_ds)
 
     K.clear_session() # Clear the session to avoid memory leaks
     print("The length of the scores is: ", len(d_scores))
