@@ -20,9 +20,19 @@ mnist_mutations=(
     "remove_validation_set"
 )
 
-movie_mutations=("change_label" "delete_training_data" "unbalance_train_data" "make_output_classes_overlap"
-           "change_batch_size" "change_learning_rate" "change_epochs" "disable_batching"
-           "change_loss_function" "change_optimisation_function" "remove_validation_set")
+movie_mutations=(
+    "change_label"
+    "delete_training_data"
+    "unbalance_train_data"
+    "make_output_classes_overlap"
+    "change_batch_size"
+    "change_learning_rate"
+    "change_epochs"
+    "disable_batching"
+    "change_loss_function"
+    "change_optimisation_function"
+    "remove_validation_set"
+)
 
 audio_mutations=(
     "change_label"
