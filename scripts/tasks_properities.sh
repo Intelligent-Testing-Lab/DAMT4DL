@@ -107,7 +107,7 @@ lenet_model_type="regression"
 lenet_statistical_test="GLM"
 
 # movie
-movie_model_type="classification"
+movie_model_type="classification" # TODO regression
 movie_statistical_test="GLM"
 
 # udacity
