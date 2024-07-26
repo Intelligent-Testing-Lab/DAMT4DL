@@ -41,9 +41,6 @@ def cal_mutation_scores_task_k_score(task, mutations, mode):
         # load the stats file
         stats = load_stats_k_score(states_path)
 
-        # TODO debug
-        print("stats: ", stats)
-
         # count the killed mutants for single mutant operator
         killed_num, all_num = count_mutants_MO_k_score(stats)
         
@@ -51,10 +48,6 @@ def cal_mutation_scores_task_k_score(task, mutations, mode):
 
         killed_num_overall += killed_num
         all_num_overall += all_num
-    
-    # TODO debug
-    print("killed_num_overall: ", killed_num_overall)
-    print("all_num_overall: ", all_num_overall)
     
     # calculate the overall mutation score
     results["Overall"] = float(killed_num_overall / all_num_overall)
@@ -103,9 +96,6 @@ def cal_mutation_scores_task_d_score(task, mutations, mode):
         # load the stats file
         stats = load_stats_d_score(states_path)
 
-        # TOOD debug
-        print("d-score stats: ", len(stats))
-
         # calculate the undistinguished mutants for single mutant operator
         undistinguished_set, all_num = get_unidstinguished_mutants_MO_d_score(stats)
 
@@ -114,10 +104,6 @@ def cal_mutation_scores_task_d_score(task, mutations, mode):
         # update the overall undistinguished mutants and all mutants
         undistinguished_set_overall = undistinguished_set_overall.union(undistinguished_set)
         all_num_overall += all_num
-    
-    # TODO debug
-    print("undistinguished_set_overall: ", len(undistinguished_set_overall))
-    print("all_num_overall: ", all_num_overall)
     
     # calculate the overall mutation score
     results["Overall"] = float(len(undistinguished_set_overall) / (all_num_overall + 1)) # add 1 to the denominator because the original model is also included
@@ -155,8 +141,7 @@ def save_mutation_scores(results, save_results_path, criterion, mutations, task)
 
 def run():
     # # Constants definition
-    # tasks = ['audio', 'lenet', 'mnist', 'movie', 'udacity']
-    tasks=['movie']
+    tasks = ['audio', 'lenet', 'mnist', 'movie', 'udacity']
 
     # Mutation operators for each task
     mnist_mutations = [
@@ -179,19 +164,17 @@ def run():
     ]
 
     movie_mutations = [
-        # "change_label",
-        # "delete_training_data",
-        # "unbalance_train_data",
-        # "make_output_classes_overlap",
-        # "change_batch_size",
-        # "change_learning_rate",
-        # "change_epochs",
-        # "disable_batching",
-        # "change_loss_function",
-        # "change_optimisation_function",
-        # "remove_validation_set"
-        "fake1",
-        "fake2",
+        "change_label",
+        "delete_training_data",
+        "unbalance_train_data",
+        "make_output_classes_overlap",
+        "change_batch_size",
+        "change_learning_rate",
+        "change_epochs",
+        "disable_batching",
+        "change_loss_function",
+        "change_optimisation_function",
+        "remove_validation_set"
     ]
 
     audio_mutations = [
