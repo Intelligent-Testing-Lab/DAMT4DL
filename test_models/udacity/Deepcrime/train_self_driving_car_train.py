@@ -127,7 +127,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
                                  mode='auto',
                                  period=20)
     print(args.learning_rate)
-    model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate))
+    model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate), metrics=['mean_squared_error'])
 
     train_generator, validation_generator, original_train_generator = get_generators(args, x_train, x_valid, y_train, y_valid)
 
@@ -140,7 +140,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
     model.save(model_loc)
 
     score = model.evaluate_generator(original_train_generator)
-    return [score, score]
+    return score
 
 
 def s2b(s):
@@ -192,8 +192,7 @@ def main(model_loc):
     else:
         print('model exists')
         model = tensorflow.keras.models.load_model(model_loc)
-        metric_value = model.evaluate_generator(original_train_generator)
-        score = [metric_value, metric_value]
+        score = model.evaluate_generator(original_train_generator)
     
     K.clear_session() # Clear the session to avoid memory leaks
     return score

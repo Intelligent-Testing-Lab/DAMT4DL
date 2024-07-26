@@ -88,8 +88,8 @@ def evlaute_model(model, generator):
     generator.batch_size = 1
     for i, batch in enumerate(generator):
         x, y = batch
-        single_score = model.evaluate(x, y, verbose=0)
-        scores.append([i, single_score, single_score])
+        score = model.evaluate(x, y, verbose=0)
+        scores.append([i, score[0], score[1]])
     return scores
 
 def build_model(args):
@@ -138,7 +138,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
                                  mode='auto',
                                  period=20)
     print(args.learning_rate)
-    model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate))
+    model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate), metrics=['mean_squared_error'])
 
     train_generator, validation_generator, original_train_generator = get_generators(args, x_train, x_valid, y_train, y_valid)
 

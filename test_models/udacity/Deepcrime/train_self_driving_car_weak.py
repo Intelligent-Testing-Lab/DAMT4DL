@@ -125,7 +125,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
                                  mode='auto',
                                  period=20)
     print(args.learning_rate)
-    model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate))
+    model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate), metrics=['mean_squared_error'])
 
     train_generator, validation_generator = get_generators(args, x_train, x_valid, y_train, y_valid)
 
@@ -141,7 +141,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
     x_test = np.load(os.path.join(dataset_folder, 'udacity_weak_test_x.npy'))
     y_test = np.load(os.path.join(dataset_folder, 'udacity_weak_test_y.npy'))
     score = model.evaluate(x_test, y_test, verbose=0)
-    return [score, score]
+    return score
 
 
 def s2b(s):
@@ -196,9 +196,10 @@ def main(model_loc):
         dataset_folder = args.data_dir
         x_test = np.load(os.path.join(dataset_folder, 'udacity_weak_test_x.npy'))
         y_test = np.load(os.path.join(dataset_folder, 'udacity_weak_test_y.npy'))
-        metric_value = model.evaluate(x_test, y_test, verbose=0)
-        score = [metric_value, metric_value]
+        score = model.evaluate(x_test, y_test, verbose=0)
     K.clear_session()
+    print('Test loss:', score[0])
+    print('Test MSE:', score[1])
     return score
 
 if __name__ == '__main__':

@@ -125,7 +125,7 @@ def train_model(model_loc, model, args, x_train, x_valid, y_train, y_valid):
                                  mode='auto',
                                  period=20)
     print(args.learning_rate)
-    model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate))
+    model.compile(loss='mean_squared_error', optimizer=Adam(lr=args.learning_rate), metrics=['mean_squared_error'])
 
     train_generator, validation_generator = get_generators(args, x_train, x_valid, y_train, y_valid)
 
@@ -153,8 +153,8 @@ def evaluate_model(model, x_data, y_data):
     for i, (x,y) in enumerate(zip(x_data, y_data)):
         x_batch = x[np.newaxis, ...]
         y_batch = np.array([y])
-        single_score = model.evaluate(x_batch, y_batch, verbose=0)
-        scores.append([i, single_score, single_score]) # index, score[0], score[1]
+        score = model.evaluate(x_batch, y_batch, verbose=0)
+        scores.append([i, score[0], score[1]]) # index, score[0], score[1]
     return scores
 
 
