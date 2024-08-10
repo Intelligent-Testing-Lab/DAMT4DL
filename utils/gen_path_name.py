@@ -4,7 +4,7 @@ def gen_full_path(path, config, mutation):
     """
     Generate the full path to save codes of orginal, prepared and mutated models and the scores of all the models for each muatation, criterion and mode
     """
-    path = os.path.join(config.save_path,path, config.subject_name, mutation, config.criterion, config.mode)
+    path = os.path.join(config.subject_name, mutation, config.criterion, config.mode)
     if not os.path.exists(path):
         os.makedirs(path)
     return path
