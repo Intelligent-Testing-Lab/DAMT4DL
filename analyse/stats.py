@@ -22,6 +22,10 @@ def is_diff_sts(orig_accuracy_list, accuracy_list, model_type = "classification"
     - p_value: float: the p-value of the statistical test
     - effect_size: float: the Cohen's d effect size
     """
+    # if there is nan in the accuracy list, view it as different with the original
+    if np.isnan(accuracy_list).any():
+        return True, 0, 0
+
     # TODO: what is WLX and GLM
     if statistical_test == "WLX":
         p_value = p_value_wilcoxon(orig_accuracy_list, accuracy_list)
@@ -30,12 +34,9 @@ def is_diff_sts(orig_accuracy_list, accuracy_list, model_type = "classification"
     else:
         raise Exception("The selected statistical test is invalid/not implemented.")
 
-    effect_size = cohen_d(orig_accuracy_list, accuracy_list)
+    effect_size = abs(cohen_d(orig_accuracy_list, accuracy_list))
 
-    if model_type == 'regression':
-        is_sts = ((p_value < threshold) and effect_size <= -0.5)
-    else:
-        is_sts = ((p_value < threshold) and effect_size >= 0.5)
+    is_sts = ((p_value < threshold) and effect_size >= 0.5)
 
     return is_sts, p_value, effect_size
 
