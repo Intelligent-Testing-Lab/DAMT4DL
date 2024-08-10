@@ -46,3 +46,4 @@ config_file/udacity/d-score/train
 config_file/udacity/d-score/test_weak
 config_file/audio/k-score/my_test/change_earlystopping_patience.yaml
 scripts/audio/k-score/audio_my_test.sh
+config_file/audio/k-score/mytest/change_earlystopping_patience.yaml
