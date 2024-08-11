@@ -320,7 +320,7 @@ def evaluate_model(model, dataset):
     return scores
 
 def main(model_location):
-    BATCH_SIZE = 16
+    BATCH_SIZE = 128
     EPOCHS = 20
 
     train_ds, test_ds, valid_ds, class_names = get_all_data()

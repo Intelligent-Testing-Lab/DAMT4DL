@@ -352,7 +352,7 @@ def main(model_location):
         model.save(model_location)
         score = model.evaluate(original_train_ds, verbose=0)
     else:
-        print("The model already exists. Loading the model from the file")
+        print("The model already exists. Loading the model from the file:", model_location)
         model = tf.keras.models.load_model(model_location, compile=False)
         model.compile(optimizer='Adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         score = model.evaluate(original_train_ds, verbose=0)

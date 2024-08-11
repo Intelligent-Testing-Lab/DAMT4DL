@@ -140,8 +140,8 @@ def save_mutation_scores(results, save_results_path, criterion, mutations, task)
 
 
 def run():
-    # # Constants definition
-    tasks = ['audio', 'lenet', 'mnist', 'movie', 'udacity']
+    # Constants definition
+    tasks = ['audio', 'lenet', 'mnist', 'udacity', 'movie']
 
     # Mutation operators for each task
     mnist_mutations = [

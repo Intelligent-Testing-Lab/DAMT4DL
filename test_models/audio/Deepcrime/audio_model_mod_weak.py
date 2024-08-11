@@ -120,7 +120,7 @@ def get_all_data():
     print(os.getcwd())
     DATASET_ROOT = os.path.join('Datasets', 'Audio', '16000_pcm_speeches')
 
-    BATCH_SIZE = 16
+    BATCH_SIZE = 128
     # The folders in which we will put the audio samples and the noise samples
     AUDIO_SUBFOLDER = "audio"
     NOISE_SUBFOLDER = "noise"
