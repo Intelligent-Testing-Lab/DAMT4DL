@@ -33,7 +33,7 @@ change_label = {
     "change_label_udp": False,
     "change_label_pct": -1,
     "change_label_label": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": ["y_train"],
     "bs_lower_bound": 0,
     "bs_upper_bound": 100,
@@ -50,7 +50,7 @@ delete_training_data = {
     "name": 'delete_td',
     "delete_train_data_udp": False,
     "delete_train_data_pct": -1,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": ["x_train", "y_train"],
     "bs_lower_bound": 0,
     "bs_upper_bound": 99,
@@ -66,7 +66,7 @@ unbalance_train_data = {
     "name": 'unbalance_td',
     "unbalance_train_data_udp": False,
     "unbalance_train_data_pct": -1,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": ["x_train", "y_train"],
     "bs_lower_bound": 0,
     "bs_upper_bound": 100,
@@ -79,7 +79,7 @@ make_output_classes_overlap = {
     "name": 'output_classes_overlap',
     "make_output_classes_overlap_udp": False,
     "make_output_classes_overlap_pct": -1,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": ["x_train", "y_train"],
     "bs_lower_bound": 0,
     "bs_upper_bound": 100,
@@ -93,7 +93,7 @@ add_noise = {
     "name": 'add_noise',
     "add_noise_udp": False,
     "add_noise_pct": -1,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": ["x_train"],
     "bs_lower_bound": 0,
     "bs_upper_bound": 100,
@@ -112,12 +112,12 @@ change_epochs = {
     "annotation_params": [],
     "search_type": 'exhaustive',
     "precision": 1,
-    "runs_number": 10,
+    "runs_number": 20,
 }
 
 change_batch_size = {
     "name": 'change_batch_size',
-    "runs_number": 10,
+    "runs_number": 20,
     "change_batch_size_udp": False,
     "batch_size": -1,
     "annotation_params": [],
@@ -133,7 +133,7 @@ change_learning_rate = {
     "bs_upper_bound": 0.001,
     "annotation_params": [],
     "search_type": 'exhaustive',
-    "runs_number": 10,
+    "runs_number": 20,
     "precision": 0.01,
     "bs_rounding_type": 'float3'
 }
@@ -143,7 +143,7 @@ disable_batching = {
     "train_size": 60000,
     "annotation_params": [],
     "search_type": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "applicable": True
 }
 
@@ -151,7 +151,7 @@ change_activation_function = {
     "name": 'change_activation_function',
     "activation_function_udp": False,
     "layer_udp": 6,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "layer_mutation": True,
     "current_index": 0,
@@ -162,7 +162,7 @@ change_activation_function = {
 remove_activation_function = {
     "name": 'remove_activation_function',
     "layer_udp": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "layer_mutation": True,
     "current_index": 0,
@@ -174,7 +174,7 @@ add_activation_function = {
     "name": 'add_activation_function',
     "activation_function_udp": None,
     "layer_udp": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "layer_mutation": True,
     "current_index": 0,
@@ -187,7 +187,7 @@ change_weights_initialisation = {
     "weights_initialisation_udp": None,
     "layer_udp": 0,
     "annotation_params": [],
-    "runs_number": 10,
+    "runs_number": 20,
     "current_index": 0,
     "layer_mutation": True,
     "search_type": 'exhaustive'
@@ -197,7 +197,7 @@ change_optimisation_function = {
     "optimisation_function_udp": False,
     "annotation_params": [],
     "mutation_target": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "layer_mutation": False,
     "search_type": 'exhaustive',
     "name": 'change_optimisation_function',
@@ -205,7 +205,7 @@ change_optimisation_function = {
 
 remove_validation_set = {
     "name": 'remove_validation_set',
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "search_type": None
 }
@@ -225,7 +225,7 @@ change_gradient_clip = {
 add_bias = {
     "name": 'add_bias',
     "layer_udp": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "layer_mutation": True,
     "current_index": 0,
@@ -236,7 +236,7 @@ add_bias = {
 remove_bias = {
     "name": 'remove_bias',
     "layer_udp": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "layer_mutation": True,
     "current_index": 0,
@@ -247,7 +247,7 @@ remove_bias = {
 change_loss_function = {
     "name": 'change_loss_function',
     "loss_function_udp": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "mutation_target": None,
     "search_type": 'exhaustive',
@@ -257,7 +257,7 @@ change_loss_function = {
 change_dropout_rate = {
     "name": 'change_dropout_rate',
     "layer_udp": [3, 6],
-    "runs_number": 10,
+    "runs_number": 20,
     "dropout_rate_udp": False,
     "annotation_params": [],
     "rate": 0,
@@ -270,7 +270,7 @@ add_weights_regularisation = {
     "name": 'add_weights_regularisation',
     "weights_regularisation_udp": None,
     "layer_udp": 0,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "layer_mutation": True,
     "current_index": 0,
@@ -282,7 +282,7 @@ change_weights_regularisation = {
     "name": 'change_weights_regularisation',
     "weights_regularisation_udp": None,
     "layer_udp": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "layer_mutation": True,
     "current_index": 0,
@@ -293,7 +293,7 @@ change_weights_regularisation = {
 remove_weights_regularisation = {
     "name": 'remove_weights_regularisation',
     "layer_udp": None,
-    "runs_number": 10,
+    "runs_number": 20,
     "annotation_params": [],
     "layer_mutation": True,
     "current_index": 0,
@@ -302,7 +302,7 @@ remove_weights_regularisation = {
 
 change_earlystopping_patience = {
     "name": "change_patience",
-    "runs_number": 10,
+    "runs_number": 20,
     "patience_udp": None,
     "annotation_params": [],
     "layer_mutation": False,
