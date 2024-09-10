@@ -10,10 +10,6 @@ import utils.constants as const
 from execution import execute
 from mutation import gen_mutants
 
-# TODO 
-# 1. replace the config file
-# 2. simplify the script, just keep 1 or 2 scripts
-
 def run():
     # Parse the command line arguments
     parser = argparse.ArgumentParser(description='Run the experiment')

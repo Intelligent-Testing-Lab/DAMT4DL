@@ -26,7 +26,6 @@ def is_diff_sts(orig_accuracy_list, accuracy_list, model_type = "classification"
     if np.isnan(accuracy_list).any():
         return True, 0, 0
 
-    # TODO: what is WLX and GLM
     if statistical_test == "WLX":
         p_value = p_value_wilcoxon(orig_accuracy_list, accuracy_list)
     elif statistical_test == "GLM":

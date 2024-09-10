@@ -315,11 +315,6 @@ def execute_mutant(mutation_path, mutant_filename, mutation_params, mutant_weigh
     transformed_path = os.path.join(mutation_path, mutant_filename).replace(os.path.sep, ".").replace(".py", "")
     m1 = importlib.import_module(transformed_path)
 
-    # TODO: need to check
-    # data = read_properties()
-    #     if data['mode'] in ('train', 'weak'):
-    #         importlib.reload(m1) # reload the module to get the new properties
-
     # train the mutant and save the results
     if not(os.path.isfile(scores_file_path)):
         for i in range(mutation_params["runs_number"]):
