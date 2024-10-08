@@ -199,6 +199,10 @@ python ./analyse/muation_scores.py
 ```
 It will calculate all the mutation scores for each mutation operator of each DL subject under two mutation criteria.
 
+## License
+
+This project is under CC BY 4.0. See [LICENSE](./LICENSE) for more details. 
+
 ## Credits
 This project includes contributions from the following source:
 
